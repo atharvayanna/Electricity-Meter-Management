@@ -1,0 +1,114 @@
+.login{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.login__sidebar{
+    background-color: #dce6d1;
+    width: 50%;
+}
+
+.login__logo{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 2rem;
+    margin-left: 4rem;
+}
+
+.login__logo img{
+    padding-right: 1rem;
+}
+
+.login__logo span{
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.sidebar__img{
+    margin-top: 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-self: center;
+}
+
+.sidebar__img img{
+    width: 80%;
+    align-self: center;
+}
+
+/* Form */
+.login__form{
+    align-self: center;
+    display: flex;
+    width: 50%;
+    justify-content: center;
+}
+
+.login__form h1{
+    text-align: center;
+}
+
+.login__form .welcome{
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    color: #abb99b;
+}
+
+form{
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+form label{
+    padding-left: 0.5rem;
+}
+
+form input{
+    width: 20rem;
+    height: 2.5rem;
+    margin: 0.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid #dce6d1;
+    border-radius: 4px;
+}
+
+form input::placeholder{
+    color: #abb99b;
+    font-size: 1rem;
+}
+
+form button{
+    width: 21.3rem;
+    height: 2rem;
+    margin: 0.5rem;
+    margin-top: 1rem;
+    background-color: #dce6d1;
+    border: 1px solid #dce6d1;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+form button:hover{
+    background-color: #abb99b;
+}
+
+.newuser{
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.newuser span{
+    color: #1565C0;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+
