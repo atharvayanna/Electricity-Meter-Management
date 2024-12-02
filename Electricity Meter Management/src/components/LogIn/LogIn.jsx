@@ -14,7 +14,7 @@ const LogIn = () => {
         <div className="login__sidebar">
             <div className="login__logo">
                 <img width="48" height="48" src="https://img.icons8.com/color/48/energy-isolation.png" alt="energy-isolation"/>
-                <span>Digi-Meter</span>
+                <span>DigiMeter</span>
             </div>
             <div className="sidebar__img">
                 <img src={SideBg} alt="" />

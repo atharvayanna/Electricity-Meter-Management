@@ -1,8 +1,17 @@
-
+import NavBar from "../../NavBar/NavBar"
+import SideBarNavigator from "../../NavBar/SideBarNavigator/SideBarNavigator"
 
 const UserDashboard = () => {
   return (
-    <div>UserDashboard</div>
+    <>
+        <NavBar/>
+        <div className="User">
+            <SideBarNavigator/>
+            <div>
+              <p>Dashboard</p>
+            </div>
+        </div>
+    </>
   )
 }
 
