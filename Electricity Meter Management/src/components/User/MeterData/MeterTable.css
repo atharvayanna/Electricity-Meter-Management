@@ -1,0 +1,133 @@
+.table__functions {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.table__functions button {
+  height: 2rem;
+  background-color: #d7e6c5;
+  border: 1px solid #d7e6c5;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 1rem;
+}
+
+.functions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.functions select {
+  font-size: 0.9rem;
+  padding: 4px 12px;
+  background-color: #d7e6c5;
+  border: 1px solid #d7e6c5;
+  outline: none;
+  border-radius: 4px;
+}
+
+.search {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.search input {
+  font-size: 1rem;
+  border: 1px solid #d7e6c5;
+  border-radius: 4px;
+}
+
+.table{
+  height: 68vh;
+}
+
+.table h3{
+  margin-left: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.table__user {
+  width: 100%;
+}
+
+.table__user thead {
+  background-color: #d7e6c5;
+}
+
+.table__user th {
+  padding-left: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #d7e6c5;
+}
+
+.table__user td {
+  text-align: left;
+  padding-left: 12px;
+  height: 2rem;
+}
+
+.table__user tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table__user tr:hover {
+  background-color: #f2f2f2;
+}
+
+.loader {
+  margin-left: 4rem;
+  margin-top: 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* bottom: 50%;
+  right: 50%; */
+  /* transform: translate(-50%,-50%); */
+}
+
+.no__record {
+  margin-left: 4rem;
+  margin-top: 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  background-color: #d7e6c5;
+  border: 1px solid #d7e6c5;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #b1d19f;
+}
+
+.pagination button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 1rem;
+  padding: 0 10px;
+}

@@ -1,0 +1,9 @@
+.meter{
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 85vw;
+    height: 86vh;
+    padding: 0 1rem;
+    /* overflow-y: scroll; */
+}
+

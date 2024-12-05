@@ -1,0 +1,8 @@
+.dashboard__content{
+    width: 85vw;
+    height: 86vh;
+    padding:0 1rem;
+    margin-top: auto;
+    margin-bottom: auto;
+    /* overflow-y: scroll; */
+}

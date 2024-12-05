@@ -1,0 +1,38 @@
+
+.dashboard__kpi{
+    display: flex;
+    flex-direction: row;
+    /* justify-content: center; */
+    gap: 1.5rem;
+}
+
+.kpi__card{
+    width: 11.8rem;
+    border: 1px solid #D7E6C5;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: #D7E6C5;
+}
+
+.kpi__card h3{
+    height: 3rem;
+    p{
+        font-size: 0.8rem;
+        color: rgb(0, 172, 9);
+    }
+}
+
+.kpi__card p{
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.kpi__card select {
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: #d7e6c5;
+    border: 1px solid #d7e6c5;
+    outline: none;
+  }
