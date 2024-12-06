@@ -20,8 +20,8 @@ const RegisterUser = ({ setIsOpen }) => {
   const [errors, setErrors] = useState(["", "", "", "", "", "", ""]);
   const [isError, setIsError] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const dispatch = useDispatch();
 
   function capitalizeFirstLetter(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
@@ -78,15 +78,18 @@ const RegisterUser = ({ setIsOpen }) => {
     if (pass === "") {
       newError[2] = "This field is Required";
       setIsError(true);
+    } else if(pass.length<7){
+      newError[2] = 'Min length should be 7'
+      setIsError(true)
     }
-    // setErrors(newError);
+    setErrors(newError);
   };
 
   const handlePass = (e) => {
     setPass(e.target.value);
     errors[2] = "";
     setErrors(errors);
-    // setIsError(false)
+    setIsError(false)
   };
 
   const validateConfirmPass = () => {

@@ -11,6 +11,10 @@ const UserDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeter, setCurrentMeter] = useState("");
   const [meterData, setMeterData] = useState([]);
+  const [consumption, setConsumption] = useState(0);
+  const [energySaving, setEnergySaving] = useState(0);
+  const [costSaving, setCostSaving] = useState(0);
+  const [avg, setAvg] = useState(0);
 
   async function fetchData() {
     setIsLoading(true);
@@ -44,7 +48,56 @@ const UserDashboard = () => {
       setIsLoading(false);
       console.log(error);
     }
+    calculateKpi();
   }
+
+  const calculateKpi = () => {
+    const curr = new Date();
+    let lastMonth = {};
+    let prevMonth = {};
+    const sortedData = meterData.sort((a, b) => {
+      new Date(b.reading_date) - a.reading_date;
+    });
+    for (let i in sortedData) {
+      const date = new Date(sortedData[i].reading_date);
+      if (
+        date.getMonth() <= curr.getMonth() &&
+        date.getFullYear() <= curr.getFullYear()
+      ) {
+        lastMonth = sortedData[i];
+        prevMonth = sortedData[parseInt(i) + 1];
+        break;
+      }
+    }
+    if (lastMonth.reading_date) {
+      setConsumption(lastMonth.reading_value);
+      const saving =
+        ((lastMonth.reading_value - prevMonth.reading_value) /
+          prevMonth.reading_value) * 100;
+
+      setEnergySaving(saving.toFixed(2));
+      const cost =
+        ((lastMonth.billing_amount - prevMonth.billing_amount) /
+          prevMonth.billing_amount) *
+        100;
+      setCostSaving(cost.toFixed(2));
+    }
+
+    const { avgM, avgS } = sortedData.reduce(
+      (acc, e) => {
+        const date = new Date(e.reading_date);
+        if (date.getFullYear() === curr.getFullYear()) {
+          acc.avgM += 1;
+          acc.avgS += e.reading_value;
+        }
+        return acc;
+      },
+      { avgM: 0, avgS: 0 }
+    );
+
+    setAvg((avgS/avgM).toFixed(2))
+};
+
 
   const handleCurrentMeter = (e) => {
     setCurrentMeter(e.target.value);
@@ -52,11 +105,13 @@ const UserDashboard = () => {
 
   useEffect(() => {
     setCurrentMeter(userMeters[0]);
+    fetchData();
+    // calculateKpi();
   }, []);
 
   useEffect(() => {
     if (currentMeter === "") return;
-    // fetchData()
+    fetchData();
   }, [currentMeter]);
 
   return (
@@ -80,32 +135,32 @@ const UserDashboard = () => {
           <h3>
             Consumption <p>Last Month</p>
           </h3>
-          <p>150units</p>
+          <p>{consumption} units</p>
         </div>
 
         <div className="kpi__card">
           <h3>
-            Energy Saving <p className="des">Compared to last month</p>
+            Energy Saving <p className="des" style={{color:energySaving>0 ? 'rgb(0, 172, 9)':'red'}}>Compared to last month</p>
           </h3>
-          <p className="des">20%</p>
+          <p className="des">{energySaving}%</p>
         </div>
 
         <div className="kpi__card">
           <h3>
-            Cost Saving <p className="des">Compared to last month</p>
+            Cost Saving <p className="des" style={{color:costSaving>0 ? 'rgb(0, 172, 9)':'red'}} > Compared to last month</p>
           </h3>
-          <p className="des">20%</p>
+          <p className="des">{costSaving}%</p>
         </div>
 
         <div className="kpi__card">
           <h3>
             Avg Consumption <p className="des">{currentMeter}</p>
           </h3>
-          <p className="des">20%</p>
+          <p className="des">{avg} units</p>
         </div>
       </div>
       <div className="dashboard__barchart">
-        <BarChart />
+        {/* <BarChart /> */}
       </div>
     </div>
   );

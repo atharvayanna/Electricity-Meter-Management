@@ -20,7 +20,6 @@ const LogIn = () => {
   const [isloading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [loginDisable, setLoginDisable] = useState(true);
-  console.log(loginDisable)
 
   const usernameValidation = () => {
     let newError = [...errors];

@@ -32,13 +32,13 @@ const NavBar = () => {
           <div className="profile">
             <i className="fa-solid fa-user"></i>
             <div className="usercard">
-              <div className="usercard__consumerno">
-                <span>Consumer No:</span>
-                <span>{user.id}</span>
-              </div>
               <div className="usercard__name">
                 <span>Name:</span>
                 <span>{user.name}</span>
+              </div>
+              <div className="usercard__consumerno">
+                <span>Email:</span>
+                <span>{user.email}</span>
               </div>
             </div>
           </div>
