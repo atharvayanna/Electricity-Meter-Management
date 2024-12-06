@@ -46,7 +46,7 @@
 }
 
 .table h3{
-  margin-left: 0.3rem;
+  /* margin-left: 0.3rem; */
   margin-bottom: 0.5rem;
 }
 
@@ -109,6 +109,7 @@
 }
 
 .pagination button {
+  font-weight: 600;
   background-color: #d7e6c5;
   border: 1px solid #d7e6c5;
   border-radius: 4px;

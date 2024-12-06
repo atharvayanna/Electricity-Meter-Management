@@ -3,6 +3,10 @@
     font-weight: 500;
 }
 
+.meterdata__table{
+    height: 68vh;
+}
+
 .table__user td{
     height: 3rem;
 }
@@ -10,4 +14,8 @@
 .meterdata__users h3{
     margin-bottom: 0.5rem;
     margin-left: 0.1rem;
+}
+
+.metertable__users .pagination{
+    margin-top: 0;
 }

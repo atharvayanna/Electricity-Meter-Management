@@ -5,7 +5,7 @@ import axios from "axios";
 import url from "../../Url";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUserType, setAccessToken } from "../../redux/appSlice";
+import { setUserType, setAccessToken, setUser } from "../../redux/appSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RotatingLines } from "react-loader-spinner";
@@ -91,7 +91,7 @@ const LogIn = () => {
         navigate("/user", { state: { Msg: "Login Successful" } });
       } else if (role_id === 1) {
         dispatch(setUserType({ userType: "admin" }));
-        navigate("/admin");
+        navigate("/admin", { state: { Msg: "Login Successful" } });
       }
     } catch (error) {
       setIsLoading(false);
@@ -132,6 +132,7 @@ const LogIn = () => {
   useEffect(() => {
     dispatch(setAccessToken({ accessToken: "" }));
     dispatch(setUserType({ userType: "" }));
+    dispatch(setUser({userDetails:{}}));
   }, []);
 
   return (

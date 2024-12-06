@@ -39,3 +39,10 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+.table__users .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }

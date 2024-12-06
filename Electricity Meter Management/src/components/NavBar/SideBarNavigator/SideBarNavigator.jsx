@@ -128,7 +128,7 @@ const SideBarNavigator = () => {
             onClick={navigateBulkUpload}
           >
             <i className="fa-solid fa-database"></i>
-            <p>Bulk Upload</p>
+            <p>Upload</p>
           </div>
         )}
       </div>

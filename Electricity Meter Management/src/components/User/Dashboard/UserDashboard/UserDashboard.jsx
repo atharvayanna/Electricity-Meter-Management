@@ -22,16 +22,33 @@ const UserDashboard = () => {
         },
       });
       setIsLoading(false);
-      setMeterData(res.data.meter_readings);
+      const formattedData = res.data.meter_readings.map((e) => {
+        const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
+        const date = new Date(e.reading_date);
+        const formattedDate = date
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .join("-");
+
+        return {
+          ...e,
+          paymentStatus,
+          formattedDate,
+        };
+      });
+      const sortedData = formattedData.sort(
+        (a, b) => new Date(b.reading_date) - new Date(a.reading_date)
+      );
+      setMeterData(sortedData);
     } catch (error) {
       setIsLoading(false);
       console.log(error);
     }
   }
 
-  const handleCurrentMeter = (e)=>{
+  const handleCurrentMeter = (e) => {
     setCurrentMeter(e.target.value);
-  }
+  };
 
   useEffect(() => {
     setCurrentMeter(userMeters[0]);
@@ -39,7 +56,6 @@ const UserDashboard = () => {
 
   useEffect(() => {
     if (currentMeter === "") return;
-
     // fetchData()
   }, [currentMeter]);
 

@@ -16,9 +16,9 @@ const MeterTable = () => {
   const [itemsPerPage, setItemsPerPage] = useState(7);
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("dateAsc");
+  const [sortOption, setSortOption] = useState("dateDesc");
 
-  async function fetchData() {
+  async function fetchData(){
     setIsLoading(true);
     try {
       const res = await axios.get(`${url}/meterReading/user/${currentMeter}`, {
@@ -28,8 +28,19 @@ const MeterTable = () => {
         },
       });
       setIsLoading(false);
-      setMeterData(res.data.meter_readings);
-      setTotalRecords(res.data.meter_readings.length);
+      const formattedData = res.data.meter_readings.map((e) => {
+        const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
+        const date = new Date(e.reading_date);
+        const formattedDate = date.toLocaleDateString("en-GB").split("/").join("-");
+  
+        return {
+          ...e,
+          paymentStatus,
+          formattedDate,
+        };
+      });
+      setMeterData(formattedData);
+      setTotalRecords(formattedData.length);
     } catch (error) {
       setIsLoading(false);
       console.log(error);
@@ -72,26 +83,36 @@ const MeterTable = () => {
     return Math.ceil(totalRecords / itemsPerPage);
   };
 
-  const getPaginatedData = () => {
-    let filteredData = [...meterData];
-
+  const searchResult = ()=>{
+    let filteredData = [...meterData]
     if (searchQuery) {
       filteredData = meterData.filter((e) => {
-        const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
-        const date = new Date(e.reading_date);
-
         return (
           e.reading_value.toString().includes(searchQuery) ||
           e.billing_amount.toString().includes(searchQuery) ||
-          paymentStatus.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
-          date
-            .toLocaleDateString("en-GB")
-            .split("/")
-            .join("-")
-            .includes(searchQuery)
+          e.paymentStatus.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          e.formattedDate.includes(searchQuery)
         );
       });
     }
+
+    return filteredData
+  }
+
+  const getPaginatedData = () => {
+    let filteredData = [...meterData];
+
+    // if (searchQuery) {
+    //   filteredData = meterData.filter((e) => {
+    //     return (
+    //       e.reading_value.toString().includes(searchQuery) ||
+    //       e.billing_amount.toString().includes(searchQuery) ||
+    //       e.paymentStatus.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+    //       e.formattedDate.includes(searchQuery)
+    //     );
+    //   });
+    // }
+    filteredData = searchResult();
 
     filteredData = sortData(filteredData);
 
@@ -127,6 +148,10 @@ const MeterTable = () => {
     }
     fetchData();
   }, [currentMeter]);
+
+  useEffect(()=>{
+    setTotalRecords(searchResult().length);
+  },[searchQuery])
 
   return (
     <div className="meter__table">
@@ -186,15 +211,14 @@ const MeterTable = () => {
           ) : (
             <tbody>
               {getPaginatedData().map((e, index) => {
-                const date = new Date(e.reading_date);
                 return (
                   <tr key={index}>
                     <td>
-                      {date.toLocaleDateString("en-GB").split("/").join("-")}
+                      {e.formattedDate}
                     </td>
                     <td>{e.reading_value} units</td>
                     <td>{e.billing_amount}</td>
-                    <td>{e.is_paid === "No" ? "Unpaid" : "Paid"}</td>
+                    <td>{e.paymentStatus}</td>
                   </tr>
                 );
               })}
@@ -210,10 +234,10 @@ const MeterTable = () => {
       </div>
 
       <div className="pagination">
-        <button onClick={handleFirstPage} disabled={currentPage === 1}>
+        <button onClick={handleFirstPage} disabled={currentPage === 1 || totalRecords===0}>
           &#x226A;
         </button>
-        <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+        <button onClick={handlePreviousPage} disabled={currentPage === 1 || totalRecords===0}>
           &#x003C;
         </button>
         <span>
@@ -221,13 +245,13 @@ const MeterTable = () => {
         </span>
         <button
           onClick={handleNextPage}
-          disabled={currentPage === totalPages()}
+          disabled={currentPage === totalPages() || totalRecords===0}
         >
           &#x003E;
         </button>
         <button
           onClick={handleLastPage}
-          disabled={currentPage === totalPages()}
+          disabled={currentPage === totalPages() || totalRecords===0}
         >
           &#x226B;
         </button>
