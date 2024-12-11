@@ -271,7 +271,7 @@ const UsersTable = () => {
                 return (
                   <tr key={index}>
                     <td>{e.id}</td>
-                    <td>{e.name}</td>
+                    <td>{capitalizeStr(e.name)}</td>
                     <td>{e.email}</td>
                     <td>{e.contact}</td>
                     <td>{capitalizeStr(e.city)}</td>

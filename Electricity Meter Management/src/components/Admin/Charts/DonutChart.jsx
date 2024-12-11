@@ -52,7 +52,7 @@ const DonutChart = ({ data }) => {
 
       //chart title
       const title = chart.titles.create();
-      title.text = "Billing Status";
+      title.text = "Billing Status (Last 6 months)";
       title.fontSize = 20;
       // title.marginBottom = 15;
       title.marginTop = 16;

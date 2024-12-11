@@ -47,7 +47,7 @@ const DefaultLineChart = ({ data }) => {
 
       // chart title
       let title = chart.titles.create();
-      title.text = 'Monthly Default Amount';
+      title.text = 'Monthly Defaults';
       title.fontSize = 20;
       title.marginBottom = 15;
       title.fontWeight = 'bold';

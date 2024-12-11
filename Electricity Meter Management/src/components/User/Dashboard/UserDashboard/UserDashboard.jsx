@@ -9,17 +9,18 @@ import { net } from "@amcharts/amcharts4/core";
 
 const UserDashboard = () => {
   const token = useSelector((state) => state.accessToken);
+  const user = useSelector((state) => state.user);
   const userMeters = useSelector((state) => state.user.meter_numbers);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeter, setCurrentMeter] = useState("");
   const [meterData, setMeterData] = useState([]);
-  const [chartData, setChartData] = useState([]);
   const [consumption, setConsumption] = useState(0);
   const [energySaving, setEnergySaving] = useState(0);
   const [costSaving, setCostSaving] = useState(0);
   const [lastMonthDate, setLastMonthDate] = useState();
   const [prevMonthDate, setPrevMonthDate] = useState();
   const [avg, setAvg] = useState(0);
+  const currDate = new Date();
 
   async function fetchData() {
     setIsLoading(true);
@@ -57,13 +58,6 @@ const UserDashboard = () => {
 
   const calculateKpi = () => {
     const curr = new Date();
-    const lmd = new Date();
-    const pmd = new Date();
-
-    // lmd.setMonth(curr.getMonth() - 1);
-    // setLastMonthDate(lmd);
-    // pmd.setMonth(lmd.getMonth() - 1);
-    // setPrevMonthDate(pmd);
 
     let lastMonth = {};
     let prevMonth = {};
@@ -72,7 +66,7 @@ const UserDashboard = () => {
     });
     for (let i in sortedData) {
       const date = new Date(sortedData[i].reading_date);
-      const dateP = new Date(sortedData[parseInt(i) + 1].reading_date)
+      const dateP = new Date(sortedData[parseInt(i) + 1].reading_date);
       if (
         date.getMonth() <= curr.getMonth() &&
         date.getFullYear() <= curr.getFullYear()
@@ -80,7 +74,7 @@ const UserDashboard = () => {
         lastMonth = sortedData[i];
         prevMonth = sortedData[parseInt(i) + 1];
         setLastMonthDate(date);
-        setPrevMonthDate(dateP)
+        setPrevMonthDate(dateP);
         break;
       }
     }
@@ -92,8 +86,11 @@ const UserDashboard = () => {
         100;
 
       setEnergySaving(saving.toFixed(2));
-      const cost = lastMonth.billing_amount - prevMonth.billing_amount;
-      setCostSaving(cost.toFixed(2));
+      const costSP =
+        ((lastMonth.billing_amount - prevMonth.billing_amount) /
+          prevMonth.billing_amount) *
+        100;
+      setCostSaving(costSP.toFixed(2));
     }
 
     const { avgM, avgS } = sortedData.reduce(
@@ -128,7 +125,6 @@ const UserDashboard = () => {
 
   useEffect(() => {
     calculateKpi();
-    setChartData(meterData);
   }, [meterData]);
 
   return (
@@ -136,7 +132,8 @@ const UserDashboard = () => {
       <div className="dashboard__kpi">
         <div className="kpi__card">
           <h3>
-            Meter Number <p>User ID</p>
+            Meter Number
+            <p>{`Consumer No: ${user.id}`}</p>
           </h3>
           <select name="" id="" onChange={handleCurrentMeter}>
             {userMeters.map((e, index) => (
@@ -151,46 +148,77 @@ const UserDashboard = () => {
         <div className="kpi__card">
           <h3>
             Consumption{" "}
-            <p>{lastMonthDate? lastMonthDate.toLocaleString("default", { month: "long" }): 'Last Month'}</p>
+            <p>
+              {lastMonthDate
+                ? lastMonthDate.toLocaleString("default", { month: "long" })
+                : "Last Month"}
+            </p>
           </h3>
-          <p>{consumption} units</p>
+          <p
+            className="des"
+            style={{ color: energySaving < 0 ? "rgb(0, 172, 9)" : "red" }}
+          >
+            {consumption} units
+          </p>
         </div>
 
         <div className="kpi__card">
           <h3>
-            {energySaving>=0? 'Energy Saving': 'Energy Expenditure'}
-            <p
-              className="des"
-              style={{ color: energySaving > 0 ? "rgb(0, 172, 9)" : "red" }}
-            >{lastMonthDate? `${prevMonthDate.toLocaleString("default", {
-              month: "long",
-            })} to ${lastMonthDate.toLocaleString("default", {
-              month: "long",
-            })}`: "Previous Month"}</p>
+            Energy Usage
+            <p className="des">
+              {lastMonthDate
+                ? `${prevMonthDate.toLocaleString("default", {
+                    month: "long",
+                  })} to ${lastMonthDate.toLocaleString("default", {
+                    month: "long",
+                  })}`
+                : "Previous Month"}
+            </p>
           </h3>
-          <p className="des">{energySaving>=0? energySaving: energySaving*-1}%</p>
+          <p
+            className="des"
+            style={{ color: energySaving < 0 ? "rgb(0, 172, 9)" : "red" }}
+          >
+            {energySaving > 0
+              ? `${energySaving}% \u2191`
+              : `${energySaving * -1}% \u2193`}
+          </p>
         </div>
 
         <div className="kpi__card">
           <h3>
-            {costSaving>=0? 'Cost Efficiency':'Cost Inefficiency'}
-            <p
-              className="des"
-              style={{ color: costSaving > 0 ? "rgb(0, 172, 9)" : "red" }}
-            >{lastMonthDate? `${prevMonthDate.toLocaleString("default", {
-              month: "long",
-            })} to ${lastMonthDate.toLocaleString("default", {
-              month: "long",
-            })}`: "Previous Month"}</p>
+            Cost Saving
+            <p className="des">
+              {lastMonthDate
+                ? `${prevMonthDate.toLocaleString("default", {
+                    month: "long",
+                  })} to ${lastMonthDate.toLocaleString("default", {
+                    month: "long",
+                  })}`
+                : "Previous Month"}
+            </p>
           </h3>
-          <p className="des">{costSaving>=0? costSaving:costSaving*-1} Rs</p>
+          <p
+            className="des"
+            style={{ color: costSaving < 0 ? "rgb(0, 172, 9)" : "red" }}
+          >
+            {costSaving > 0
+              ? `${costSaving}%  \u2193`
+              : `${costSaving * -1}% \u2191`}
+          </p>
         </div>
 
         <div className="kpi__card">
           <h3>
-            Avg Consumption <p className="des">{currentMeter}</p>
+            Avg Consumption <p className="des">Per Month</p>
+            {/* {`Year: ${currDate.toLocaleString('default', { year: 'numeric' })}`} */}
           </h3>
-          <p className="des">{avg} units</p>
+          <p
+            className="des"
+            style={{ color: energySaving < 0 ? "rgb(0, 172, 9)" : "red" }}
+          >
+            {avg} units
+          </p>
         </div>
       </div>
       <div className="dashboard__charts">
