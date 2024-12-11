@@ -1,5 +1,16 @@
-.admin{
-    display: flex;
-    flex-direction: row;
-    height: 91vh;
+.admin {
+  display: flex;
+  flex-direction: row;
+  height: 91vh;
+}
+
+.admin__dashboard {
+  width: 85vw;
+  padding: 0rem 1rem;
+  height: 86vh;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
+  color: gr
 }

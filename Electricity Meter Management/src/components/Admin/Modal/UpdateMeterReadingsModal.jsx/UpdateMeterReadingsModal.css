@@ -1,0 +1,54 @@
+.meter__record{
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background-color: white;
+    /* width: 100% */
+}
+
+.user__details{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.user__details >*{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user__details input{
+    font-size: 1rem;
+    padding: 0.5rem;
+    width: 15rem;
+    height: 1ren;
+    border: 1px solid #D7E6C5;
+    border-radius: 4px;
+}
+
+.user__details select{
+    font-size: 1rem;
+    padding: 0.5rem;
+    width: 16rem;
+    border: 1px solid #D7E6C5;
+    border-radius: 4px;
+}
+
+/* .meter__record button{
+    font-size: 1rem;
+    padding: 0.5rem;
+    align-self: center;
+    background-color: #D7E6C5;
+    border: 1px solid #D7E6C5;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 1rem;
+} */
+
+.meter__record button{
+    align-self: center;
+    margin-top: 1rem;
+}

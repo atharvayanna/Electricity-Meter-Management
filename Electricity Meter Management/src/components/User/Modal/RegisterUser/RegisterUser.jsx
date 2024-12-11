@@ -151,16 +151,17 @@ const RegisterUser = ({ setIsOpen }) => {
 
   const validateCity = () => {
     let newErrors = [...errors];
-    const cityRe = /^[A-Z][a-z ]+$/;
-    if (city.trim() != "" && cityRe.test(city.trim())) {
-      newErrors[6] = "";
-    } else if (!cityRe.test(city.trim()) && city.trim() != "") {
-      newErrors[6] = "Invalid City Name";
-      setIsError(true);
-    } else if (city.length > 80) {
+    // const cityRe = /^[A-Z][a-z ]+$/;
+    // if (city.trim() != "" && cityRe.test(city.trim())) {
+    //   newErrors[6] = "";
+    // } else if (!cityRe.test(city.trim()) && city.trim() != "") {
+    //   newErrors[6] = "Invalid City Name";
+    //   setIsError(true);
+    // } else 
+    if (city.length > 80) {
       newErrors[6] = "Max Length 80 Characters";
       setIsError(true);
-    } else {
+    } else if(city.trim==='') {
       newErrors[6] = "This field is required";
       setIsError(true);
     }

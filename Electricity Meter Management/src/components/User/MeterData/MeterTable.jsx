@@ -4,10 +4,11 @@ import url from "../../../Url";
 import "./MeterTable.css";
 import { RotatingLines } from "react-loader-spinner";
 import axios from "axios";
+import UpdateMeterReadingsModal from "../../Admin/Modal/UpdateMeterReadingsModal.jsx/UpdateMeterReadingsModal";
 
 const MeterTable = () => {
   const token = useSelector((state) => state.accessToken);
-  const user = useSelector(state=>state.user);
+  const user = useSelector((state) => state.user);
   const userMeters = useSelector((state) => state.user.meter_numbers);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeter, setCurrentMeter] = useState("");
@@ -17,8 +18,9 @@ const MeterTable = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("dateDesc");
+  const [isOpen, setIsOpen] = useState(false);
 
-  async function fetchData(){
+  async function fetchData() {
     setIsLoading(true);
     try {
       const res = await axios.get(`${url}/meterReading/user/${currentMeter}`, {
@@ -31,8 +33,11 @@ const MeterTable = () => {
       const formattedData = res.data.meter_readings.map((e) => {
         const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
         const date = new Date(e.reading_date);
-        const formattedDate = date.toLocaleDateString("en-GB").split("/").join("-");
-  
+        const formattedDate = date
+          .toLocaleDateString("en-GB")
+          .split("/")
+          .join("-");
+
         return {
           ...e,
           paymentStatus,
@@ -83,8 +88,8 @@ const MeterTable = () => {
     return Math.ceil(totalRecords / itemsPerPage);
   };
 
-  const searchResult = ()=>{
-    let filteredData = [...meterData]
+  const searchResult = () => {
+    let filteredData = [...meterData];
     if (searchQuery) {
       filteredData = meterData.filter((e) => {
         return (
@@ -96,8 +101,8 @@ const MeterTable = () => {
       });
     }
 
-    return filteredData
-  }
+    return filteredData;
+  };
 
   const getPaginatedData = () => {
     let filteredData = [...meterData];
@@ -137,6 +142,10 @@ const MeterTable = () => {
     setCurrentPage(totalPages());
   };
 
+  const handleAddRecord = () => {
+    setIsOpen(true);
+  };
+
   useEffect(() => {
     setIsLoading(true);
     setCurrentMeter(userMeters[0]);
@@ -149,15 +158,26 @@ const MeterTable = () => {
     fetchData();
   }, [currentMeter]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setTotalRecords(searchResult().length);
-  },[searchQuery])
+  }, [searchQuery]);
 
   return (
     <div className="meter__table">
+      {isOpen && (
+        <UpdateMeterReadingsModal
+          props={{
+            setIsOpen,
+            reading: { user_id: user.id, meter_number: currentMeter },
+            newRecord: true,
+            newUserRecord: false,
+            fetchData,
+          }}
+        />
+      )}
       <div className="table__functions">
         <div className="functions">
-          <button>Add Bill</button>
+          {/* <button onClick={handleAddRecord}>Add Bill</button> */}
           <select name="" id="" onChange={handleCurrentMeter}>
             {userMeters.map((e, index) => (
               <option value={e} key={index}>
@@ -177,17 +197,16 @@ const MeterTable = () => {
           <input
             type="text"
             name=""
-            id=""
+            id="user_search"
             placeholder="Search"
             onChange={handleSearch}
           />
-          <button>
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </button>
+          <i className="fa-solid fa-magnifying-glass"></i>
         </div>
       </div>
       <div className="table">
         <h3>Consumption Data</h3>
+        <div className="table__container">
         <table className="table__user">
           <thead>
             <tr>
@@ -213,11 +232,9 @@ const MeterTable = () => {
               {getPaginatedData().map((e, index) => {
                 return (
                   <tr key={index}>
-                    <td>
-                      {e.formattedDate}
-                    </td>
+                    <td>{e.formattedDate}</td>
                     <td>{e.reading_value} units</td>
-                    <td>{e.billing_amount}</td>
+                    <td>{e.billing_amount} Rs</td>
                     <td>{e.paymentStatus}</td>
                   </tr>
                 );
@@ -231,13 +248,21 @@ const MeterTable = () => {
             </tbody>
           )}
         </table>
+        </div>
+        
       </div>
 
       <div className="pagination">
-        <button onClick={handleFirstPage} disabled={currentPage === 1 || totalRecords===0}>
+        <button
+          onClick={handleFirstPage}
+          disabled={currentPage === 1 || totalRecords === 0}
+        >
           &#x226A;
         </button>
-        <button onClick={handlePreviousPage} disabled={currentPage === 1 || totalRecords===0}>
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1 || totalRecords === 0}
+        >
           &#x003C;
         </button>
         <span>
@@ -245,13 +270,13 @@ const MeterTable = () => {
         </span>
         <button
           onClick={handleNextPage}
-          disabled={currentPage === totalPages() || totalRecords===0}
+          disabled={currentPage === totalPages() || totalRecords === 0}
         >
           &#x003E;
         </button>
         <button
           onClick={handleLastPage}
-          disabled={currentPage === totalPages() || totalRecords===0}
+          disabled={currentPage === totalPages() || totalRecords === 0}
         >
           &#x226B;
         </button>

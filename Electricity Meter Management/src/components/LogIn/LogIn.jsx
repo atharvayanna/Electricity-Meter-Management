@@ -88,7 +88,7 @@ const LogIn = () => {
       if (role_id === 3) {
         dispatch(setUserType({ userType: "user" }));
         navigate("/user", { state: { Msg: "Login Successful" } });
-      } else if (role_id === 1) {
+      } else if (role_id === 1 || role_id === 2) {
         dispatch(setUserType({ userType: "admin" }));
         navigate("/admin", { state: { Msg: "Login Successful" } });
       }
@@ -108,6 +108,17 @@ const LogIn = () => {
         });
       } else if (resMsg.startsWith("account not found")) {
         toast.error("Invalid Email!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      } else{
+        toast.error(error.response.data.message, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

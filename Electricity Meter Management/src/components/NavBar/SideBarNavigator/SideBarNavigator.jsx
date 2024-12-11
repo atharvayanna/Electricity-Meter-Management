@@ -78,7 +78,7 @@ const SideBarNavigator = () => {
             onClick={navigateMeterData}
           >
             <i className="fa-solid fa-table"></i>
-            <p>History</p>
+            <p>Bill Records</p>
           </div>
         )}
         {user === "admin" && (

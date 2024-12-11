@@ -5,15 +5,14 @@
   justify-content: space-between;
 }
 
-.table__functions button {
+/* .table__functions button {
   height: 2rem;
   background-color: #d7e6c5;
   border: 1px solid #d7e6c5;
   border-radius: 4px;
   padding: 4px 12px;
   font-size: 1rem;
-}
-
+} */
 .functions {
   display: flex;
   flex-direction: row;
@@ -22,9 +21,10 @@
 
 .functions select {
   font-size: 0.9rem;
+  /* font-weight: 500; */
   padding: 4px 12px;
   background-color: #d7e6c5;
-  border: 1px solid #d7e6c5;
+  border: 1px solid #acc988;
   outline: none;
   border-radius: 4px;
 }
@@ -33,12 +33,23 @@
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
+  position: relative;
 }
 
-.search input {
+.search i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #A9A9AC;
+}
+
+#user_search {
   font-size: 1rem;
   border: 1px solid #d7e6c5;
   border-radius: 4px;
+  box-sizing: border-box;
+  padding-right: 2rem;
 }
 
 .table{
@@ -51,11 +62,18 @@
 }
 
 .table__user {
+  max-height: 90%;
   width: 100%;
+  
+}
+
+.table__container{
+  /* border: 1px solid #d7e6c5;  */
 }
 
 .table__user thead {
   background-color: #d7e6c5;
+  
 }
 
 .table__user th {
@@ -64,6 +82,7 @@
   padding-bottom: 12px;
   text-align: left;
   background-color: #d7e6c5;
+  /* height: 2rem; */
 }
 
 .table__user td {
@@ -76,9 +95,6 @@
   background-color: #f2f2f2;
 }
 
-.table__user tr:hover {
-  background-color: #f2f2f2;
-}
 
 .loader {
   margin-left: 4rem;
@@ -110,18 +126,15 @@
 
 .pagination button {
   font-weight: 600;
-  background-color: #d7e6c5;
-  border: 1px solid #d7e6c5;
   border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 1rem;
+  padding: 4px 8px;
+  font-size: 0.9rem;
   margin: 0 5px;
-  cursor: pointer;
 }
 
-.pagination button:hover {
+/* .pagination button:hover {
   background-color: #b1d19f;
-}
+} */
 
 .pagination button:disabled {
   background-color: #e0e0e0;

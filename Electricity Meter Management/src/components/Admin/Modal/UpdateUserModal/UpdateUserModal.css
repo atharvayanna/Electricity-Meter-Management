@@ -1,0 +1,78 @@
+.update__user{
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.user__ids{
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.user__ids >*{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user__ids input,textarea{
+    font-size: 1rem;
+    padding: 0.5rem;
+    width: 15rem;
+    /* height: 1rem; */
+    border: 1px solid #D7E6C5;
+    border-radius: 4px;
+}
+
+.user__city{
+    display: flex;
+    justify-content: space-between;
+}
+
+.user_city{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user_role{
+    display: flex;
+    gap: 0.5rem;
+}
+
+.user_role select{
+    font-size: 0.9rem;
+    /* padding: 0.1rem */
+    border: 1px solid #D7E6C5;
+    border-radius: 4px;
+
+}
+
+/* .update__user button{
+    align-self: center;
+    background-color: #D7E6C5;
+    border: 1px solid #D7E6C5;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 0.5rem;
+    margin-top: 1rem;
+} */
+
+.update__user button{
+    align-self: center;
+    margin-top: 1rem;
+}
+
+.user__label{
+    display: flex;
+    justify-content: space-between;
+}
+
+.user__label span{
+    font-size: 0.9rem;
+}
