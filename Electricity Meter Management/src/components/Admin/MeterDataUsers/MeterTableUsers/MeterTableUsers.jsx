@@ -11,7 +11,7 @@ const MeterTableUsers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [allMetersData, setAllMetersData] = useState([]);
@@ -51,17 +51,17 @@ const MeterTableUsers = () => {
     }
   }
 
-  function capitalizeStr(str){
-    const strArray = str.split(' ');
-    const arr = strArray.map(word =>          
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    )
-    return arr.join(' ');
+  function capitalizeStr(str) {
+    const strArray = str.split(" ");
+    const arr = strArray.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    );
+    return arr.join(" ");
   }
 
-  const searchResult =() =>{
-    let filteredData = [...allMetersData]
-    if(searchQuery){
+  const searchResult = () => {
+    let filteredData = [...allMetersData];
+    if (searchQuery) {
       filteredData = allMetersData.filter((e) => {
         return (
           e.user_id.toString().includes(searchQuery) ||
@@ -75,8 +75,8 @@ const MeterTableUsers = () => {
       });
     }
 
-    return filteredData
-  }
+    return filteredData;
+  };
 
   const handleSort = (e) => {
     setSortOption(e.target.value);
@@ -134,62 +134,80 @@ const MeterTableUsers = () => {
     setCurrentPage(totalPages());
   };
 
-  const handleDeleteReading = async(reading_id)=>{
+  const handleDeleteReading = async (reading_id) => {
     try {
-      const res = await axios.patch(`${url}/meterRecord/${reading_id}`,{},{
-        headers : {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
+      const res = await axios.patch(
+        `${url}/meterRecord/${reading_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `${token}`,
+            "ngrok-skip-browser-warning": "69420",
+          },
         }
-      })
+      );
       console.log(res.data);
 
-      const filteredData = allMetersData.filter((ele)=>ele.reading_id!==reading_id)
-      setAllMetersData(filteredData)
+      const filteredData = allMetersData.filter(
+        (ele) => ele.reading_id !== reading_id
+      );
+      setAllMetersData(filteredData);
     } catch (error) {
-      console.log(error.response)
+      console.log(error.response);
     }
-  }
+  };
 
-  const handleUpdateReading = async(reading_id)=>{
+  const handleUpdateReading = async (reading_id) => {
     try {
       setIsOpen(true);
-      setReading(allMetersData.find((ele)=>ele.reading_id===reading_id))
+      setReading(allMetersData.find((ele) => ele.reading_id === reading_id));
     } catch (error) {
-      console.log(error.response)
+      console.log(error.response);
     }
-  }
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  useEffect(()=>{
-    setTotalRecords(searchResult().length)
-  },[searchQuery])
+  useEffect(() => {
+    setTotalRecords(searchResult().length);
+  }, [searchQuery]);
 
   return (
     <div className="meterdata__users">
-      {isOpen && <UpdateMeterReadingsModal props={{setIsOpen, reading, newRecord:false, fetchData}}/>}
+      {isOpen && (
+        <UpdateMeterReadingsModal
+          props={{ setIsOpen, reading, newRecord: false, fetchData }}
+        />
+      )}
       {/* <UpdateMeterReadingsModal props={{setIsOpen}}/> */}
       <div className="table__functions">
-        <div className="meterdata__functions">
-        <select id="sortOption" value={sortOption} onChange={handleSort}>
+        <div className="title">
+          <h2>Meter Readings</h2>
+        </div>
+
+        <div className="functions">
+          <select id="sortOption" value={sortOption} onChange={handleSort}>
             <option value="dateDesc">Date &#x2193;</option>
             <option value="dateAsc">Date &#x2191;</option>
             <option value="billAmountAsc">Bill &#x2191;</option>
             <option value="billAmountDesc">Bill &#x2193;</option>
           </select>
-        </div>
-        <div className="search">
-          <input type="text" name="" id="" placeholder="Search" onChange={handleSearch} />
-          <i className="fa-solid fa-magnifying-glass"></i>
-          {/* <button>
+
+          <div className="search">
+            <input
+              type="text"
+              name=""
+              id=""
+              placeholder="Search"
+              onChange={handleSearch}
+            />
             <i className="fa-solid fa-magnifying-glass"></i>
-          </button> */}
+          </div>
         </div>
       </div>
-      <h3>Meter Readings</h3>
+      {/* <h3>Meter Readings</h3> */}
       <div className="meterdata__table">
         <table className="table__user">
           <thead>
@@ -226,10 +244,18 @@ const MeterTableUsers = () => {
                     <td>{e.paymentStatus}</td>
                     <td>
                       <div className="actions">
-                        <button id="update_user" onClick={()=>{handleUpdateReading(e.reading_id)}}>
+                        <button
+                          id="update_user"
+                          onClick={() => {
+                            handleUpdateReading(e.reading_id);
+                          }}
+                        >
                           <i className="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button id="delete_user" onClick={()=>handleDeleteReading(e.reading_id)}>
+                        <button
+                          id="delete_user"
+                          onClick={() => handleDeleteReading(e.reading_id)}
+                        >
                           <i className="fa-sharp fa-solid fa-trash"></i>
                         </button>
                       </div>
@@ -238,21 +264,27 @@ const MeterTableUsers = () => {
                 );
               })}
 
-              {(searchResult().length === 0 && !isOpen) && (
+              {searchResult().length === 0 && !isOpen && (
                 <div className="no__record">
                   <p>No Record Present</p>
                 </div>
-              )} 
+              )}
             </tbody>
           )}
         </table>
       </div>
 
       <div className="pagination">
-        <button onClick={handleFirstPage} disabled={currentPage === 1 || totalRecords=== 0}>
+        <button
+          onClick={handleFirstPage}
+          disabled={currentPage === 1 || totalRecords === 0}
+        >
           &#x226A;
         </button>
-        <button onClick={handlePreviousPage} disabled={currentPage === 1 || totalRecords=== 0}>
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1 || totalRecords === 0}
+        >
           &#x003C;
         </button>
         <span>
@@ -260,13 +292,13 @@ const MeterTableUsers = () => {
         </span>
         <button
           onClick={handleNextPage}
-          disabled={currentPage === totalPages() || totalRecords=== 0}
+          disabled={currentPage === totalPages() || totalRecords === 0}
         >
           &#x003E;
         </button>
         <button
           onClick={handleLastPage}
-          disabled={currentPage === totalPages() || totalRecords=== 0}
+          disabled={currentPage === totalPages() || totalRecords === 0}
         >
           &#x226B;
         </button>

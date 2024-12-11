@@ -14,7 +14,7 @@ const MeterTable = () => {
   const [currentMeter, setCurrentMeter] = useState("");
   const [meterData, setMeterData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("dateDesc");
@@ -176,8 +176,41 @@ const MeterTable = () => {
         />
       )}
       <div className="table__functions">
+        <div className="title">
+          <h2>Consumption Data</h2>
+        </div>
         <div className="functions">
-          {/* <button onClick={handleAddRecord}>Add Bill</button> */}
+          <div className="meter_select">
+            <select name="" id="" onChange={handleCurrentMeter}>
+              {userMeters.map((e, index) => (
+                <option value={e} key={index}>
+                  {" "}
+                  {e}{" "}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="sort">
+            <select id="sortOption" value={sortOption} onChange={handleSort}>
+              <option value="dateDesc">Date &#x2193;</option>
+              <option value="dateAsc">Date &#x2191;</option>
+              <option value="billAmountAsc">Bill &#x2191;</option>
+              <option value="billAmountDesc">Bill &#x2193;</option>
+            </select>
+          </div>
+          <div className="search">
+          <input
+            type="text"
+            name=""
+            id="user_search"
+            placeholder="Search"
+            onChange={handleSearch}
+          />
+          <i className="fa-solid fa-magnifying-glass"></i>
+        </div>
+        </div>
+        {/* <div className="functions">
+          <button onClick={handleAddRecord}>Add Bill</button>
           <select name="" id="" onChange={handleCurrentMeter}>
             {userMeters.map((e, index) => (
               <option value={e} key={index}>
@@ -202,54 +235,52 @@ const MeterTable = () => {
             onChange={handleSearch}
           />
           <i className="fa-solid fa-magnifying-glass"></i>
-        </div>
+        </div> */}
       </div>
       <div className="table">
-        <h3>Consumption Data</h3>
         <div className="table__container">
-        <table className="table__user">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Consumption</th>
-              <th>Bill Amount </th>
-              <th>Payment Status</th>
-            </tr>
-          </thead>
+          <table className="table__user">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Consumption</th>
+                <th>Bill Amount </th>
+                <th>Payment Status</th>
+              </tr>
+            </thead>
 
-          {isLoading ? (
-            <div className="loader">
-              <RotatingLines
-                strokeColor="grey"
-                strokeWidth="5"
-                animationDuration="0.75"
-                width="50"
-                visible={true}
-              />
-            </div>
-          ) : (
-            <tbody>
-              {getPaginatedData().map((e, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{e.formattedDate}</td>
-                    <td>{e.reading_value} units</td>
-                    <td>{e.billing_amount} Rs</td>
-                    <td>{e.paymentStatus}</td>
-                  </tr>
-                );
-              })}
+            {isLoading ? (
+              <div className="loader">
+                <RotatingLines
+                  strokeColor="grey"
+                  strokeWidth="5"
+                  animationDuration="0.75"
+                  width="50"
+                  visible={true}
+                />
+              </div>
+            ) : (
+              <tbody>
+                {getPaginatedData().map((e, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{e.formattedDate}</td>
+                      <td>{e.reading_value} units</td>
+                      <td>{e.billing_amount} Rs</td>
+                      <td>{e.paymentStatus}</td>
+                    </tr>
+                  );
+                })}
 
-              {meterData.length === 0 && (
-                <div className="no__record">
-                  <p>No Record Present</p>
-                </div>
-              )}
-            </tbody>
-          )}
-        </table>
+                {meterData.length === 0 && (
+                  <div className="no__record">
+                    <p>No Record Present</p>
+                  </div>
+                )}
+              </tbody>
+            )}
+          </table>
         </div>
-        
       </div>
 
       <div className="pagination">

@@ -15,20 +15,19 @@ const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
   const [userUpdateStatus, setUpdateUserStatus] = useState([false]);
   const [user, setUser] = useState({});
 
-
-  function capitalizeStr(str){
-    const strArray = str.split(' ');
-    const arr = strArray.map(word =>          
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    )
-    return arr.join(' ');
+  function capitalizeStr(str) {
+    const strArray = str.split(" ");
+    const arr = strArray.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    );
+    return arr.join(" ");
   }
 
   async function fetchData() {
@@ -101,17 +100,20 @@ const UsersTable = () => {
           },
         }
       );
-      console.log(res.data)
-      toast.success(`${res.data.userData.meter_number} Added Successully to ${e.name}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      console.log(res.data);
+      toast.success(
+        `${res.data.userData.meter_number} Added Successully to ${e.name}`,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
     } catch (error) {
       console.log(error.response);
     }
@@ -177,15 +179,14 @@ const UsersTable = () => {
       text: `Email: ${e.email}`,
       showCancelButton: true,
       confirmButtonText: "Add Meter",
-      confirmButtonColor: '#008000',
+      confirmButtonColor: "#008000",
       cancelButtonText: "Cancel",
-      cancelButtonColor: 'red'
+      cancelButtonColor: "red",
     }).then((result) => {
       if (result.isConfirmed) {
         addMeter(e);
       }
     });
-  
   };
 
   useEffect(() => {
@@ -226,25 +227,24 @@ const UsersTable = () => {
         />
       )}
       <div className="table__functions">
-        <div className="allusers__functions">
-          <button onClick={handleAddUser}>Add User</button>
+        <div className="title">
+          <h2>All Users</h2>
         </div>
-        <div className="search">
-          <input
-            type="text"
-            name=""
-            id=""
-            placeholder="Search"
-            onChange={handleSearch}
-
-          />
-          <i className="fa-solid fa-magnifying-glass"></i>
-          {/* <button>
+        <div className="functions">
+          <button onClick={handleAddUser}>Add User</button>
+          <div className="search">
+            <input
+              type="text"
+              name=""
+              id=""
+              placeholder="Search"
+              onChange={handleSearch}
+            />
             <i className="fa-solid fa-magnifying-glass"></i>
-          </button> */}
+          </div>
         </div>
       </div>
-      <h3>All Users</h3>
+
       <div className="table">
         <table className="table__user">
           <thead>
