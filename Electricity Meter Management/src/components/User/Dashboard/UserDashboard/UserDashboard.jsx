@@ -20,7 +20,6 @@ const UserDashboard = () => {
   const [lastMonthDate, setLastMonthDate] = useState();
   const [prevMonthDate, setPrevMonthDate] = useState();
   const [avg, setAvg] = useState(0);
-  const currDate = new Date();
 
   async function fetchData() {
     setIsLoading(true);
@@ -105,7 +104,8 @@ const UserDashboard = () => {
       { avgM: 0, avgS: 0 }
     );
 
-    setAvg((avgS / avgM).toFixed(2));
+    if (avgS) setAvg((avgS / avgM).toFixed(2));
+    else setAvg(0);
   };
 
   const handleCurrentMeter = (e) => {
@@ -217,19 +217,24 @@ const UserDashboard = () => {
             className="des"
             style={{ color: energySaving < 0 ? "rgb(0, 172, 9)" : "red" }}
           >
-            {avg} units
+            {avg ? avg : 0} units
           </p>
         </div>
       </div>
-      <div className="dashboard__charts">
-        <div className="charts__barchart">
-          <BarChart props={{ meterData }} />
-        </div>
 
-        <div className="charts__linechart">
-          <LineChart props={{ meterData }} />
+      {meterData.length === 0 ? (
+        <div className="no__record">No Data Present</div>
+      ) : (
+        <div className="dashboard__charts">
+          <div className="charts__barchart">
+            <BarChart props={{ meterData }} />
+          </div>
+
+          <div className="charts__linechart">
+            <LineChart props={{ meterData }} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

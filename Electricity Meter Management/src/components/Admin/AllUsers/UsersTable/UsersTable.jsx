@@ -126,7 +126,7 @@ const UsersTable = () => {
   };
 
   const searchResult = () => {
-    let filteredData = [...users];
+    let filteredData = users?.length > 0 ? [...users]: [];
     if (searchQuery) {
       filteredData = users.filter((e) => {
         return (
@@ -308,7 +308,7 @@ const UsersTable = () => {
 
               {searchResult().length === 0 && !isOpen && (
                 <div className="no__record">
-                  <p>No Record Found</p>
+                  <p>No Record Present</p>
                 </div>
               )}
             </tbody>

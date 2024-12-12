@@ -18,6 +18,7 @@ nav {
   display: flex;
   align-items: center;
   gap: 0.3rem;
+  cursor: pointer;
 }
 
 .navbar__logo span {
@@ -49,13 +50,19 @@ nav .usercard {
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  /* top: 3.5rem; */
   top: 6%;
   right: 6%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.usercard__details{
+  display: flex;
+  gap: 0.3em;
 }
 
 .profile:hover .usercard{
   visibility: visible;
   cursor: pointer;
-  /* display: block; */
 }

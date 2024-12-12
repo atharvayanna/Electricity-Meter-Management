@@ -104,7 +104,7 @@ const BulkUpload = () => {
           
 
           <div className="upload__header">
-            <h3>Upload Meter Records CSV File</h3>
+            <h2>Upload Meter Records CSV File</h2>
             <button onClick={handleAddRecord} title="Add Single Record">Add Meter Record</button>
           </div>
 

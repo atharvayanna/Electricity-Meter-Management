@@ -123,7 +123,7 @@ const AdminDashboard = () => {
       <div className="dashboard__kpi">
         <div className="kpi__card">
           <h3>
-            Consumption{" "}
+            Energy Supplied
             <p>{lastMonth.toLocaleString("default", { month: "long" })}</p>
           </h3>
           <p style={{ color: revenueIncrease >= 0 ? "rgb(0, 172, 9)" : "red" }}>
@@ -190,28 +190,31 @@ const AdminDashboard = () => {
             {defaulterIncrease <= 0
               ? `${defaulterIncrease * -1}%  \u2193`
               : `${defaulterIncrease}%  \u2191`}
-            Rs
           </p>
         </div>
       </div>
-      <div className="admin__charts">
-        <div className="charts__row">
-          <div className="row__chart">
-            <BarChart data={meterData} />
+      {meterData.length === 0 ? (
+        <div className="no__record">No Data Present</div>
+      ) : (
+        <div className="admin__charts">
+          <div className="charts__row">
+            <div className="row__chart">
+              <BarChart data={meterData} />
+            </div>
+            <div className="row__chart">
+              <LineChart data={meterData} />
+            </div>
           </div>
-          <div className="row__chart">
-            <LineChart data={meterData} />
+          <div className="charts__row">
+            <div className="row__chart">
+              <DonutChart data={meterData} />
+            </div>
+            <div className="row__chart">
+              <DefaultLineChart data={meterData} />
+            </div>
           </div>
         </div>
-        <div className="charts__row">
-          <div className="row__chart">
-            <DonutChart data={meterData} />
-          </div>
-          <div className="row__chart">
-            <DefaultLineChart data={meterData} />
-          </div>
-        </div>
-      </div>
+      )}
     </>
   );
 };

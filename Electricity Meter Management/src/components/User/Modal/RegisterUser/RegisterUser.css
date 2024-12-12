@@ -172,3 +172,12 @@
   text-align: right;
   padding-right: 1rem;
 }
+
+.form__input textarea{
+  font-size: 1rem;
+  width: 20rem;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #D7E6C5;
+  border-radius: 4px;
+}

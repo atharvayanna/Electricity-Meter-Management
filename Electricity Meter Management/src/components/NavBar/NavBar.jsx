@@ -3,9 +3,11 @@ import "./NavBar.css";
 import { useSelector } from "react-redux";
 
 const NavBar = () => {
+  const userType = useSelector(state=>state.userType)
   const navigate = useNavigate();
   const navigateHome = () => {
-    navigate("/user");
+    if(userType=='user') navigate("/user")
+    else navigate('/admin')
   };
 
   const logout = () => {
@@ -31,11 +33,11 @@ const NavBar = () => {
           <div className="profile">
             <i className="fa-solid fa-user"></i>
             <div className="usercard">
-              <div className="usercard__name">
+              <div className="usercard__details">
                 <span>Name:</span>
                 <span>{user.name}</span>
               </div>
-              <div className="usercard__consumerno">
+              <div className="usercard__details">
                 <span>Email:</span>
                 <span>{user.email}</span>
               </div>

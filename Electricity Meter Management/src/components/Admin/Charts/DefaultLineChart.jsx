@@ -60,7 +60,7 @@ const DefaultLineChart = ({ data }) => {
 
       //Y-axis
       let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-      valueAxis.title.text = 'Default Amount';
+      valueAxis.title.text = 'Default Amount (Rs)';
       valueAxis.title.fontWeight = 'bold';
 
       // Create the series

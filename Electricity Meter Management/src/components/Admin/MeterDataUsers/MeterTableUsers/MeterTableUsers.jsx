@@ -178,7 +178,7 @@ const MeterTableUsers = () => {
     <div className="meterdata__users">
       {isOpen && (
         <UpdateMeterReadingsModal
-          props={{ setIsOpen, reading, newRecord: false, fetchData }}
+          props={{ setIsOpen, reading, newRecord: false, fetchData, newUserRecord: false }}
         />
       )}
       {/* <UpdateMeterReadingsModal props={{setIsOpen}}/> */}

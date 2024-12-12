@@ -1,2 +1,3 @@
-const url = 'https://a9de-2405-201-101b-1068-f882-e790-7ed0-d49d.ngrok-free.app'
+const url = 'https://db74-2409-40c2-1001-f2ec-d841-906-5c2a-9aed.ngrok-free.app'
+// const url = ''
 export default url;

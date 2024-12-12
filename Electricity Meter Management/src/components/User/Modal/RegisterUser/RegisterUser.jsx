@@ -78,9 +78,9 @@ const RegisterUser = ({ setIsOpen }) => {
     if (pass === "") {
       newError[2] = "This field is Required";
       setIsError(true);
-    } else if(pass.length<7){
-      newError[2] = 'Min length should be 7'
-      setIsError(true)
+    } else if (pass.length < 7) {
+      newError[2] = "Min length should be 7";
+      setIsError(true);
     }
     setErrors(newError);
   };
@@ -89,7 +89,7 @@ const RegisterUser = ({ setIsOpen }) => {
     setPass(e.target.value);
     errors[2] = "";
     setErrors(errors);
-    setIsError(false)
+    setIsError(false);
   };
 
   const validateConfirmPass = () => {
@@ -157,11 +157,11 @@ const RegisterUser = ({ setIsOpen }) => {
     // } else if (!cityRe.test(city.trim()) && city.trim() != "") {
     //   newErrors[6] = "Invalid City Name";
     //   setIsError(true);
-    // } else 
+    // } else
     if (city.length > 80) {
       newErrors[6] = "Max Length 80 Characters";
       setIsError(true);
-    } else if(city.trim==='') {
+    } else if (city.trim === "") {
       newErrors[6] = "This field is required";
       setIsError(true);
     }
@@ -175,20 +175,20 @@ const RegisterUser = ({ setIsOpen }) => {
     setIsError(false);
   };
 
-  const registerUser = async(e) => {
+  const registerUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const res = await axios.post(`${url}/register/user`, {
-        name:name, 
-        email:email,
-        password:pass,
+        name: name,
+        email: email,
+        password: pass,
         contact: contact,
-        city:city,
-        address:address
+        city: city,
+        address: address,
       });
       setIsLoading(false);
-      toast.success('Registration Successful', {
+      toast.success("Registration Successful", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -197,15 +197,15 @@ const RegisterUser = ({ setIsOpen }) => {
         draggable: true,
         progress: undefined,
         theme: "colored",
-        });
+      });
 
-        setIsOpen(false)
+      setIsOpen(false);
       // console.log(res.data)
     } catch (error) {
       setIsLoading(false);
       console.log(error);
       const msg = error.response.data.message;
-      const msgCap = capitalizeFirstLetter(msg)
+      const msgCap = capitalizeFirstLetter(msg);
       toast.error(msgCap, {
         position: "top-right",
         autoClose: 5000,
@@ -216,8 +216,6 @@ const RegisterUser = ({ setIsOpen }) => {
         progress: undefined,
         theme: "colored",
       });
-
-
     }
   };
 
@@ -287,7 +285,7 @@ const RegisterUser = ({ setIsOpen }) => {
                 </div>
 
                 <input
-                autoComplete="off"
+                  autoComplete="off"
                   type="text"
                   id="password"
                   placeholder="Password"
@@ -350,13 +348,21 @@ const RegisterUser = ({ setIsOpen }) => {
                   <span className="error__input">{errors[5]}</span>
                 </div>
 
-                <input
+                {/* <input
                   type="text"
                   id="address"
                   placeholder="Address"
                   onChange={handleAddress}
                   onBlur={validateAddress}
-                />
+                /> */}
+                <textarea
+                  name=""
+                  id="address"
+                  rows={2}
+                  placeholder="Address"
+                  onChange={handleAddress}
+                  onBlur={validateAddress}
+                ></textarea>
               </div>
               {/* city  */}
               <div className="personal_info">

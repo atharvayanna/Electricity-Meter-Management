@@ -76,85 +76,134 @@ const UpdateMeterReadingsModal = ({ props }) => {
     }
   };
 
+  // const validateUserId = () => {
+  //   let newErrors = [...errors];
+  //   if (userId.toString() === "") {
+  //     newErrors[0] = "This field is required";
+  //     setIsError(true);
+  //   } else {
+  //     newErrors[0] = "";
+  //   }
+  //   setErrors(newErrors);
+  // };
+
   const validateUserId = () => {
-    let newErrors = [...errors];
     if (userId.toString() === "") {
-      newErrors[0] = "This field is required"; 
-      setIsError(true);
-    } else {
-      newErrors[0] = "";
+      return "This field is required";
     }
-    setErrors(newErrors);
+
+    return "";
   };
 
   const handleUserId = (e) => {
     setUserID(e.target.value.trim());
-    errors[0] = "";
-    setErrors(errors);
-    setIsError(false);
+    checkError();
   };
 
+  // const validateMeterNo = () => {
+  //   let newErrors = [...errors];
+  //   const meterNoRe = /^M[0-9]{13}$/;
+  //   if (meterNo.toString() != "" && meterNoRe.test(meterNo)) {
+  //     newErrors[1] = "";
+  //   } else if (!meterNoRe.test(meterNo) && meterNo != "") {
+  //     newErrors[1] = "Invalid Number";
+  //     setIsError(true);
+  //   } else {
+  //     newErrors[1] = "This field is required";
+  //     setIsError(true);
+  //   }
+  //   setErrors(newErrors);
+  // };
+
   const validateMeterNo = () => {
-    let newErrors = [...errors];
     const meterNoRe = /^M[0-9]{13}$/;
     if (meterNo.toString() != "" && meterNoRe.test(meterNo)) {
-      newErrors[1] = "";
+      return "";
     } else if (!meterNoRe.test(meterNo) && meterNo != "") {
-      newErrors[1] = "Invalid Number";
-      setIsError(true);
+      return "Invalid Number";
     } else {
-      newErrors[1] = "This field is required";
-      setIsError(true);
+      return "This field is required";
     }
-    setErrors(newErrors);
   };
 
   const handleMeterNo = (e) => {
     setMeterNo(e.target.value.trim());
-    errors[1] = "";
-    setErrors(errors);
-    setIsError(false);
+    checkError()
   };
 
+  // const validateDate = () => {
+  //   let newError = [...errors];
+  //   if (date == "") {
+  //     newError[2] = "This field is required";
+  //     setIsError(true);
+  //   } else {
+  //     newError[2] = '';
+  //     setIsError(false)
+  //   }
+  //   setErrors(newError);
+  // };
+
   const validateDate = () => {
-    let newError = [...errors];
     if (date == "") {
-      newError[2] = "This field is required";
-      setIsError(true);
-    } else {
-      newError[2] = '';
-      setIsError(false)
+      return "This field is required";
     }
-    setErrors(newError);
+
+    return "";
   };
 
   const handleDate = (e) => {
     setDate(e.target.value);
-    setIsError(false);
-    errors[2] = "";
-    setErrors(errors);
+    checkError()
   };
 
+  // const validateConsumption = () => {
+  //   let newErrors = [...errors];
+  //   const consumpRe = /^[0-9]$/;
+  //   if (consumption === "") {
+  //     newErrors[3] = "This field is required";
+  //     setIsError(true);
+  //   }
+
+  //   setErrors(newErrors);
+  // };
+
   const validateConsumption = () => {
-    let newErrors = [...errors];
     const consumpRe = /^[0-9]$/;
     if (consumption === "") {
-      newErrors[3] = "This field is required";
-      setIsError(true);
+      return "This field is required";
+    } else if (parseFloat(consumption) > 10000) {
+      return "Consumption limit exceeded";
     }
 
-    setErrors(newErrors);
+    return "";
   };
 
   const handleConsumption = (e) => {
     setConsumption(e.target.value);
     setBillAmount(e.target.value * 5);
-    errors[3] = "";
-    setIsError(false);
-    setErrors(errors);
+    checkError()
   };
-  const handleBillAmount = (e) => setBillAmount(e.target.value);
-  const handlePaymentStatus = (e) => setPaymentStatus(e.target.value);
+  const handleBillAmount = (e) => {
+    setBillAmount(e.target.value);
+    checkError();
+  };
+  const handlePaymentStatus = (e) => {
+    setPaymentStatus(e.target.value);
+    checkError();
+  };
+
+  const checkError = () => {
+    const newErrors = [
+      validateUserId(),
+      validateMeterNo(),
+      validateDate(),
+      validateConsumption(),
+    ];
+
+    setErrors(newErrors);
+    setIsError(newErrors.some((error) => error !== ""));
+    return newErrors.some((error) => error !== "");
+  };
 
   useEffect(() => {
     if (!newRecord) {
@@ -188,7 +237,9 @@ const UpdateMeterReadingsModal = ({ props }) => {
               <div className="consumer_no">
                 <div className="user__label">
                   <label htmlFor="user_id">Consumer No:</label>
-                  <span style={{ color: "red", fontSize: '0.8rem' }}>{errors[0]}</span>
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    {errors[0]}
+                  </span>
                 </div>
 
                 <input
@@ -196,7 +247,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   value={userId}
                   autoFocus
                   onChange={handleUserId}
-                  onBlur={validateUserId}
+                  onBlur={checkError}
                   placeholder="Consumer No"
                   disabled={!newRecord}
                 />
@@ -204,7 +255,9 @@ const UpdateMeterReadingsModal = ({ props }) => {
               <div className="meter_no">
                 <div className="user__label">
                   <label htmlFor="meter_no">Meter No:</label>
-                  <span style={{ color: "red", fontSize: '0.8rem' }}>{errors[1]}</span>
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    {errors[1]}
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -212,7 +265,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   placeholder="Meter Number"
                   value={meterNo}
                   onChange={handleMeterNo}
-                  onBlur={validateMeterNo}
+                  onBlur={checkError}
                   disabled={!newRecord}
                 />
               </div>
@@ -221,7 +274,9 @@ const UpdateMeterReadingsModal = ({ props }) => {
               <div className="reading__date">
                 <div className="user__label">
                   <label htmlFor="date">Date:</label>
-                  <span style={{ color: "red", fontSize: '0.8rem' }}>{errors[2]}</span>
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    {errors[2]}
+                  </span>
                 </div>
 
                 <input
@@ -230,32 +285,34 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   placeholder="Date"
                   value={date}
                   onChange={handleDate}
-                  onBlur={validateDate}
+                  onBlur={checkError}
                 />
               </div>
               <div className="date__consumption">
                 <div className="user__label">
-                  <label htmlFor="consumption">Consumption (units):</label>
-                  <span style={{ color: "red", fontSize: '0.8rem' }}>{errors[3]}</span>
+                  <label htmlFor="consumption">Consumption</label>
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    {errors[3]}
+                  </span>
                 </div>
 
                 <input
                   type="text"
                   name="consumption"
                   id="consumption"
-                  placeholder="Consumption"
+                  placeholder="Consumption (units)"
                   value={consumption}
                   onChange={handleConsumption}
-                  onBlur={validateConsumption}
+                  onBlur={checkError}
                 />
               </div>
             </div>
             <div className="user__details">
               <div className="bill_amount">
-                <label htmlFor="bill">Bill Amount (Rs):</label>
+                <label htmlFor="bill">Bill Amount</label>
                 <input
                   type="number"
-                  placeholder="Bill Amount"
+                  placeholder="Bill Amount (Rs)"
                   min={150}
                   max={100000}
                   value={billAmount}
@@ -264,13 +321,14 @@ const UpdateMeterReadingsModal = ({ props }) => {
                 />
               </div>
               <div className="payment_status">
-                <label htmlFor="status">Payment Status:</label>
+                <label htmlFor="status">Payment Status</label>
                 <select
                   name="status"
                   id="status"
                   value={paymentStatus}
                   onChange={handlePaymentStatus}
-                  disabled={!newUserRecord}
+                  onBlur={checkError}
+                  disabled={newUserRecord}
                 >
                   <option value="Unpaid">Unpaid</option>
                   <option value="Paid">Paid</option>

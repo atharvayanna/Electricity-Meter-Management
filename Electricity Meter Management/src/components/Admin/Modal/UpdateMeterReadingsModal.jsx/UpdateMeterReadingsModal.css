@@ -52,3 +52,7 @@
     align-self: center;
     margin-top: 1rem;
 }
+
+.meter__record .user__label span{
+    padding-right: 0.5rem;
+}
