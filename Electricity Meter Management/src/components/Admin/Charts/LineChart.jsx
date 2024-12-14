@@ -70,7 +70,7 @@ const LineChart = ({ data }) => {
       series.name = 'Revenue';
       series.strokeWidth = 2;
       series.tensionX = 0.8;
-      series.tooltipText = '{categoryX}: [bold]{valueY}[/]';
+      series.tooltipText = '{categoryX}: [bold]{valueY}Rs[/]';
 
       let bullet = series.bullets.push(new am4charts.CircleBullet());
       bullet.circle.fill = am4core.color('#007bff');

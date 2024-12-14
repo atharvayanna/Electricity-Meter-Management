@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     accessToken: '',
     userType: 'admin',
-    user: {}
+    user: {},
+    isLoading: false
 }
 
 export const appSlice = createSlice({
@@ -18,10 +19,13 @@ export const appSlice = createSlice({
         }, 
         setUser:(state,action) =>{
             state.user = action.payload.userDetails
+        },
+        setIsLoadingR:(state,action)=>{
+            console.log(action);
+            state.isLoading = action.payload.isLoading
         }
     }
-
 })
 
-export const {setAccessToken, setUserType, setUser} = appSlice.actions;
+export const {setAccessToken, setUserType, setUser, setIsLoadingR} = appSlice.actions;
 export default appSlice.reducer;

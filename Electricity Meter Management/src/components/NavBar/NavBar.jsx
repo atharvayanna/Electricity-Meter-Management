@@ -35,11 +35,11 @@ const NavBar = () => {
             <div className="usercard">
               <div className="usercard__details">
                 <span>Name:</span>
-                <span>{user.name}</span>
+                <span>{user?.name}</span>
               </div>
               <div className="usercard__details">
                 <span>Email:</span>
-                <span>{user.email}</span>
+                <span>{user?.email}</span>
               </div>
             </div>
           </div>

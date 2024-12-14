@@ -7,13 +7,13 @@ import { useSelector } from "react-redux";
 const UpdateMeterReadingsModal = ({ props }) => {
   const token = useSelector((state) => state.accessToken);
   const { setIsOpen, reading, newRecord, newUserRecord, fetchData } = props;
-  const [userId, setUserID] = useState("");
-  const [meterNo, setMeterNo] = useState("");
-  const [date, setDate] = useState("");
-  const [consumption, setConsumption] = useState("");
+  const [userId, setUserID] = useState('');
+  const [meterNo, setMeterNo] = useState('');
+  const [date, setDate] = useState('');
+  const [consumption, setConsumption] = useState('');
   const [billAmount, setBillAmount] = useState();
   const [paymentStatus, setPaymentStatus] = useState("");
-  const [errors, setErrors] = useState(["", ""]);
+  const [errors, setErrors] = useState([]);
   const [isError, setIsError] = useState(true);
   const currDate = new Date();
 
@@ -69,6 +69,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
   }
 
   const handleUpdateReading = () => {
+    if(checkError()) return
     if (newRecord) {
       addRecord();
     } else {
@@ -76,116 +77,135 @@ const UpdateMeterReadingsModal = ({ props }) => {
     }
   };
 
-  // const validateUserId = () => {
-  //   let newErrors = [...errors];
-  //   if (userId.toString() === "") {
-  //     newErrors[0] = "This field is required";
-  //     setIsError(true);
-  //   } else {
-  //     newErrors[0] = "";
-  //   }
-  //   setErrors(newErrors);
-  // };
-
   const validateUserId = () => {
-    if (userId.toString() === "") {
-      return "This field is required";
+    let newErrors = [...errors];
+    if (userId === "") {
+      newErrors[0] = "This field is required";
+      setIsError(true);
+    } else {
+      newErrors[0] = "";
     }
-
-    return "";
+    setErrors(newErrors);
   };
+
+  // const validateUserId = () => {
+  //   if (userId === "") {
+  //     return "This field is required";
+  //   }
+
+  //   return "";
+  // };
 
   const handleUserId = (e) => {
     setUserID(e.target.value.trim());
+    errors[0] = '';
+    setErrors(errors);
     checkError();
+  };
+
+  const validateMeterNo = () => {
+    let newErrors = [...errors];
+    const meterNoRe = /^M[0-9]{13}$/;
+    if (meterNo !== "" && meterNoRe.test(meterNo)) {
+      newErrors[1] = "";
+    } else if (!meterNoRe.test(meterNo) && meterNo !== "") {
+      newErrors[1] = "Invalid Number";
+      setIsError(true);
+    } else {
+      newErrors[1] = "This field is required";
+      setIsError(true);
+    }
+    setErrors(newErrors);
   };
 
   // const validateMeterNo = () => {
-  //   let newErrors = [...errors];
-  //   const meterNoRe = /^M[0-9]{13}$/;
-  //   if (meterNo.toString() != "" && meterNoRe.test(meterNo)) {
-  //     newErrors[1] = "";
-  //   } else if (!meterNoRe.test(meterNo) && meterNo != "") {
-  //     newErrors[1] = "Invalid Number";
-  //     setIsError(true);
-  //   } else {
-  //     newErrors[1] = "This field is required";
-  //     setIsError(true);
+  //   const meterNoRe = /[0-9]{13}$/;
+  //   if(meterNo===''){
+  //     return "This field is required";
   //   }
-  //   setErrors(newErrors);
-  // };
+  //   if (!meterNoRe.test(meterNo)) {
+  //     return "Invalid Number";
+  //   } 
 
-  const validateMeterNo = () => {
-    const meterNoRe = /^M[0-9]{13}$/;
-    if (meterNo.toString() != "" && meterNoRe.test(meterNo)) {
-      return "";
-    } else if (!meterNoRe.test(meterNo) && meterNo != "") {
-      return "Invalid Number";
-    } else {
-      return "This field is required";
-    }
-  };
+  //   return ''
+  // };
 
   const handleMeterNo = (e) => {
     setMeterNo(e.target.value.trim());
-    checkError()
+    checkError();
+  };
+
+  const validateDate = () => {
+    let newError = [...errors];
+    if (date == "") {
+      newError[2] = "This field is required";
+      setIsError(true);
+    } else {
+      newError[2] = '';
+      setIsError(false)
+    }
+    setErrors(newError);
   };
 
   // const validateDate = () => {
-  //   let newError = [...errors];
   //   if (date == "") {
-  //     newError[2] = "This field is required";
-  //     setIsError(true);
-  //   } else {
-  //     newError[2] = '';
-  //     setIsError(false)
+  //     return "This field is required";
   //   }
-  //   setErrors(newError);
+
+  //   return "";
   // };
-
-  const validateDate = () => {
-    if (date == "") {
-      return "This field is required";
-    }
-
-    return "";
-  };
 
   const handleDate = (e) => {
     setDate(e.target.value);
-    checkError()
+    errors[2] = '';
+    setErrors(errors)
+    checkError();
+  };
+
+  const validateConsumption = () => {
+    let newErrors = [...errors];
+    const consumpRe = /[0-9]$/;
+    if (consumption !== "" && consumpRe.test(consumption)){
+      newErrors[3] = "";
+    } else if(!consumpRe.test(consumption) && consumption!==''){
+      newErrors[3] = 'Invalid Data'
+      setIsError(true)
+    } else if(parseFloat(consumption)>10000){
+      newErrors[3] = 'Consumption limit exceeded'
+      setIsError(true);
+    } else{
+      newErrors[3] = "This field is required";
+      setIsError(true);
+    }
+
+    setErrors(newErrors);
   };
 
   // const validateConsumption = () => {
-  //   let newErrors = [...errors];
-  //   const consumpRe = /^[0-9]$/;
+  //   const consumpRe = /[0-9]$/;
   //   if (consumption === "") {
-  //     newErrors[3] = "This field is required";
-  //     setIsError(true);
+  //     return "This field is required";
   //   }
-
-  //   setErrors(newErrors);
+  //   if (parseFloat(consumption) > 10000) {
+  //     return "Consumption limit exceeded";
+  //   }
+  //   if(!consumpRe.test(consumption)){
+  //     return "Invalid data"
+  //   }
+  
+  //   console.log(consumption);
+  //   return "";
   // };
 
-  const validateConsumption = () => {
-    const consumpRe = /^[0-9]$/;
-    if (consumption === "") {
-      return "This field is required";
-    } else if (parseFloat(consumption) > 10000) {
-      return "Consumption limit exceeded";
-    }
-
-    return "";
-  };
-
   const handleConsumption = (e) => {
-    setConsumption(e.target.value);
+    setConsumption(e.target.value.trim());
     setBillAmount(e.target.value * 5);
-    checkError()
+    errors[3] = '';
+    setErrors(errors)
+    checkError();
   };
   const handleBillAmount = (e) => {
     setBillAmount(e.target.value);
-    checkError();
   };
   const handlePaymentStatus = (e) => {
     setPaymentStatus(e.target.value);
@@ -193,16 +213,8 @@ const UpdateMeterReadingsModal = ({ props }) => {
   };
 
   const checkError = () => {
-    const newErrors = [
-      validateUserId(),
-      validateMeterNo(),
-      validateDate(),
-      validateConsumption(),
-    ];
-
-    setErrors(newErrors);
-    setIsError(newErrors.some((error) => error !== ""));
-    return newErrors.some((error) => error !== "");
+    setIsError(errors.some((error) => error !== ""));
+    return errors.some((error) => error !== "");
   };
 
   useEffect(() => {
@@ -216,7 +228,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
       setPaymentStatus(reading.paymentStatus);
     }
 
-    if (!newUserRecord) {
+    if (newUserRecord) {
       setUserID(reading.user_id);
       setMeterNo(reading.meter_number);
     }
@@ -245,9 +257,8 @@ const UpdateMeterReadingsModal = ({ props }) => {
                 <input
                   type="text"
                   value={userId}
-                  autoFocus
                   onChange={handleUserId}
-                  onBlur={checkError}
+                  onBlur={validateUserId}
                   placeholder="Consumer No"
                   disabled={!newRecord}
                 />
@@ -265,7 +276,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   placeholder="Meter Number"
                   value={meterNo}
                   onChange={handleMeterNo}
-                  onBlur={checkError}
+                  onBlur={validateMeterNo}
                   disabled={!newRecord}
                 />
               </div>
@@ -285,7 +296,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   placeholder="Date"
                   value={date}
                   onChange={handleDate}
-                  onBlur={checkError}
+                  onBlur={validateDate}
                 />
               </div>
               <div className="date__consumption">
@@ -303,7 +314,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
                   placeholder="Consumption (units)"
                   value={consumption}
                   onChange={handleConsumption}
-                  onBlur={checkError}
+                  onBlur={validateConsumption}
                 />
               </div>
             </div>

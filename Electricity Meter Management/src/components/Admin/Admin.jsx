@@ -12,7 +12,7 @@ import { setUser } from "../../redux/appSlice";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 
 const Admin = () => {
-  const token = useSelector((state) => state.accessToken);
+  const token = useSelector((state) => state.login.data.token);
   const dispatch = useDispatch();
   const { state } = useLocation();
 

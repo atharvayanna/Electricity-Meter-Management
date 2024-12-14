@@ -97,7 +97,7 @@ const BulkUpload = () => {
         <SideBarNavigator />
         {isOpen && (
           <UpdateMeterReadingsModal
-            props={{ setIsOpen,newRecord:true, reading: {}, newUserRecord: true }}
+            props={{ setIsOpen,newRecord:true, reading: {}, newUserRecord: false }}
           />
         )}
         <div className="drag_drop">
@@ -114,7 +114,7 @@ const BulkUpload = () => {
             onDrop={handleDrop}
             style={{ border: "2px dashed #ccc", padding: "20px" }}
           >
-            <h1>Drag And Drop CSV File</h1>
+            <h1>Drop a CSV File</h1>
             <h1>Or</h1>
 
             <div className="input">

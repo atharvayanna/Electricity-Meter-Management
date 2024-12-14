@@ -5,11 +5,12 @@ import axios from "axios";
 import url from "../../Url";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUserType, setAccessToken, setUser } from "../../redux/appSlice";
+import { setUserType, setAccessToken, setUser, setIsLoadingR } from "../../redux/appSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RotatingLines } from "react-loader-spinner";
 import RegisterUser from "../User/Modal/RegisterUser/RegisterUser";
+import { loginUser } from "../../redux/slices/loginSlice";
 
 const LogIn = () => {
   const dispatch = useDispatch();
@@ -73,28 +74,69 @@ const LogIn = () => {
     }
 
     try {
+      // setIsLoading(true);
+      // const res = await axios.post(`${url}/login/user`, {
+      //   email: username,
+      //   password: pass,
+      // });
+      // //   successToast();
+      // setIsLoading(false);
+      // const token = res.data.token;
+      // const parts = token.split(".");
+      // const payload = JSON.parse(atob(parts[1]));
+      // const role_id = payload.role_id;
+      // dispatch(setAccessToken({ accessToken: token }));
+      // if (role_id === 3) {
+      //   dispatch(setUserType({ userType: "user" }));
+      //   navigate("/user", { state: { Msg: "Login Successful" } });
+      // } else if (role_id === 1 || role_id === 2) {
+      //   dispatch(setUserType({ userType: "admin" }));
+      //   navigate("/admin", { state: { Msg: "Login Successful" } });
+      // }
+
       setIsLoading(true);
-      const res = await axios.post(`${url}/login/user`, {
-        email: username,
-        password: pass,
-      });
-      //   successToast();
-      setIsLoading(false);
-      const token = res.data.token;
-      const parts = token.split(".");
-      const payload = JSON.parse(atob(parts[1]));
-      const role_id = payload.role_id;
-      dispatch(setAccessToken({ accessToken: token }));
-      if (role_id === 3) {
-        dispatch(setUserType({ userType: "user" }));
-        navigate("/user", { state: { Msg: "Login Successful" } });
-      } else if (role_id === 1 || role_id === 2) {
-        dispatch(setUserType({ userType: "admin" }));
-        navigate("/admin", { state: { Msg: "Login Successful" } });
+      dispatch(setIsLoadingR({isLoading:true}));
+      const credentials = { email: username, password: pass };
+      const action = await dispatch(loginUser(credentials)); // Dispatch the login action
+      console.log(action);
+
+      if (loginUser.fulfilled.match(action)) {
+        // console.log('Login Successfull');
+        
+        const { token } = action.payload;
+        const parts = token.split(".");
+        const payload = JSON.parse(atob(parts[1]));
+        const role_id = payload.role_id;
+        
+        dispatch(setAccessToken({ accessToken: token }));
+        if (role_id === 3) {
+          dispatch(setUserType({ userType: "user" }));
+          navigate("/user", { state: { Msg: "Login Successful" } });
+        } else if (role_id === 1 || role_id === 2) {
+          console.log(role_id)
+          dispatch(setUserType({ userType: "admin" }));
+          navigate("/admin", { state: { Msg: "Login Successful" } });
+        }
+      } else {
+        const errorMessage = action.payload.message || "Login failed";
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+
+        setIsLoading(false);
+        dispatch(setIsLoading({isLoading:false}))
       }
     } catch (error) {
       setIsLoading(false);
-      const resMsg = error.response.data.message;
+      // const resMsg = error.response.data.message;
+      const resMsg = 'wrong'
       if (resMsg.startsWith("wrong")) {
         toast.error("Invalid Password!", {
           position: "top-right",
@@ -139,11 +181,11 @@ const LogIn = () => {
     setErrors(errors);
   };
 
-  useEffect(() => {
-    dispatch(setAccessToken({ accessToken: "" }));
-    dispatch(setUserType({ userType: "" }));
-    dispatch(setUser({userDetails:{}}));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(setAccessToken({ accessToken: "" }));
+  //   dispatch(setUserType({ userType: "" }));
+  //   dispatch(setUser({userDetails:{}}));
+  // }, []);
 
   return (
     <div className="login">
