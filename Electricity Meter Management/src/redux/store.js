@@ -14,9 +14,9 @@ const persistedAppReducer = persistReducer(persistConfig, appSlice);
 
 export const store = configureStore({
     reducer: {
-        app: persistedAppReducer, 
-        login: loginSlice,         
-        admin: adminSlice,         
+        app: persistedAppReducer,
+        login: loginSlice,
+        admin: adminSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
