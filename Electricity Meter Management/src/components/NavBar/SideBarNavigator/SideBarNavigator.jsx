@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import "./SideBarNavigator.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,12 +6,7 @@ import meter from "../../../assets/meter-22.svg";
 const SideBarNavigator = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState();
-  const userType = useSelector((state) => state.userType);
-
-  useEffect(() => {
-    setUser(userType);
-  }, []);
+  const user = useSelector((state)=> state.app.userType)
 
   const navigateHome = () => {
     navigate("/user");

@@ -1,24 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import url from "../../Url";
+import url from "../../../Url";
 
 const initialState = {
-  data: {},
+  data: null,
   isLoading: false,
-  error: {},
+  error: null,
 };
-
-export const loginUser = createAsyncThunk(
-  "login/user",
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${url}/login/user`, credentials);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
 
 export const getUserProfile = createAsyncThunk(
   "profile/user",
@@ -39,28 +27,17 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
-const loginSlice = createSlice({
-  name: "loginSlice",
+const adminSlice = createSlice({
+  name: "adminSlice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.data = action.payload;
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
       .addCase(getUserProfile.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
+        // console.log("User profile fetched successfully:", action);
         state.data = { ...state.data,userProfile: action.payload };
         state.isLoading = false;
       })
@@ -71,4 +48,4 @@ const loginSlice = createSlice({
   },
 });
 
-export default loginSlice.reducer;
+export default adminSlice.reducer;

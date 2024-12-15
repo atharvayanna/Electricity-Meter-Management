@@ -1,16 +1,15 @@
 import SideBg from "../../assets/LogIn bg2.svg";
 import "./LogIn.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import url from "../../Url";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUserType, setAccessToken, setUser, setIsLoadingR } from "../../redux/appSlice";
-import { ToastContainer, toast } from "react-toastify";
+import { setUserType, setAccessToken, setUser,} from "../../redux/appSlice";
+import { ToastContainer,} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RotatingLines } from "react-loader-spinner";
 import RegisterUser from "../User/Modal/RegisterUser/RegisterUser";
-import { loginUser } from "../../redux/slices/loginSlice";
+import { loginUser, getUserProfile } from "../../redux/slices/loginSlice";
+import { showToast } from "../../utils/toast";
 
 const LogIn = () => {
   const dispatch = useDispatch();
@@ -73,106 +72,33 @@ const LogIn = () => {
       return;
     }
 
-    try {
-      // setIsLoading(true);
-      // const res = await axios.post(`${url}/login/user`, {
-      //   email: username,
-      //   password: pass,
-      // });
-      // //   successToast();
-      // setIsLoading(false);
-      // const token = res.data.token;
-      // const parts = token.split(".");
-      // const payload = JSON.parse(atob(parts[1]));
-      // const role_id = payload.role_id;
-      // dispatch(setAccessToken({ accessToken: token }));
-      // if (role_id === 3) {
-      //   dispatch(setUserType({ userType: "user" }));
-      //   navigate("/user", { state: { Msg: "Login Successful" } });
-      // } else if (role_id === 1 || role_id === 2) {
-      //   dispatch(setUserType({ userType: "admin" }));
-      //   navigate("/admin", { state: { Msg: "Login Successful" } });
-      // }
+    setIsLoading(true);
+    const credentials = { email: username, password: pass };
+    const action = await dispatch(loginUser(credentials));
 
-      setIsLoading(true);
-      dispatch(setIsLoadingR({isLoading:true}));
-      const credentials = { email: username, password: pass };
-      const action = await dispatch(loginUser(credentials)); // Dispatch the login action
-      console.log(action);
+    if (loginUser.fulfilled.match(action)) {      
+      const { token } = action.payload;
+      const parts = token.split(".");
+      const {user_id, role_id}= JSON.parse(atob(parts[1]));
+      dispatch(setAccessToken({ accessToken: token }));
 
-      if (loginUser.fulfilled.match(action)) {
-        // console.log('Login Successfull');
-        
-        const { token } = action.payload;
-        const parts = token.split(".");
-        const payload = JSON.parse(atob(parts[1]));
-        const role_id = payload.role_id;
-        
-        dispatch(setAccessToken({ accessToken: token }));
-        if (role_id === 3) {
-          dispatch(setUserType({ userType: "user" }));
-          navigate("/user", { state: { Msg: "Login Successful" } });
-        } else if (role_id === 1 || role_id === 2) {
-          console.log(role_id)
-          dispatch(setUserType({ userType: "admin" }));
-          navigate("/admin", { state: { Msg: "Login Successful" } });
-        }
-      } else {
-        const errorMessage = action.payload.message || "Login failed";
-        toast.error(errorMessage, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-
-        setIsLoading(false);
-        dispatch(setIsLoading({isLoading:false}))
+      const actionUserProfile = await dispatch(getUserProfile(user_id));
+      if(getUserProfile.fulfilled.match(actionUserProfile)){
+        dispatch(setUser({ userDetails: actionUserProfile.payload.userDetails }))
       }
-    } catch (error) {
+
+      if (role_id === 3) {
+        dispatch(setUserType({ userType: "user" }));
+        navigate("/user", { state: { Msg: "Login Successful" } });
+      } else if (role_id === 1 || role_id === 2) {
+        dispatch(setUserType({ userType: "admin" }));
+        navigate("/admin", { state: { Msg: "Login Successful" } });
+      }
+    } else{
+      const errorMessage = action.payload.message || "Login failed";
+      showToast(errorMessage, 'error')
       setIsLoading(false);
-      // const resMsg = error.response.data.message;
-      const resMsg = 'wrong'
-      if (resMsg.startsWith("wrong")) {
-        toast.error("Invalid Password!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      } else if (resMsg.startsWith("account not found")) {
-        toast.error("Invalid Email!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      } else{
-        toast.error(error.response.data.message, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      }
     }
-    // navigate('/admin');
   };
 
   const openModal = () => {
@@ -181,11 +107,12 @@ const LogIn = () => {
     setErrors(errors);
   };
 
-  // useEffect(() => {
-  //   dispatch(setAccessToken({ accessToken: "" }));
-  //   dispatch(setUserType({ userType: "" }));
-  //   dispatch(setUser({userDetails:{}}));
-  // }, []);
+  useEffect(() => {
+    dispatch(setAccessToken({ accessToken: "" }));
+    dispatch(setUserType({ userType: "" }));
+    dispatch(setUser({userDetails:{}}));
+    localStorage.setItem("loginToastShown", false);
+  }, []);
 
   return (
     <div className="login">

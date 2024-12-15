@@ -14,7 +14,7 @@ const NavBar = () => {
     navigate("/");
   };
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.app.user);
 
   return (
     <nav>
