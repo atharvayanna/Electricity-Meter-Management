@@ -2,78 +2,67 @@ import { useEffect, useState } from "react";
 import "./UpdateUserModal.css";
 import axios from "axios";
 import url from "../../../../Url";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addUser,
+  updateUser,
+} from "../../../../redux/slices/admin/handleUsers";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { showToast } from "../../../../utils/toast";
 
 const UpdateUserModal = ({ props }) => {
-  const token = useSelector((state) => state.accessToken);
+  const token = useSelector((state) => state.app.accessToken);
+  const dispatch = useDispatch();
   const parts = token.split(".");
   const payload = JSON.parse(atob(parts[1]));
   const userRole = payload.role_id;
   const { newUser, user, setIsOpen, fetchData, setUpdateUserStatus } = props;
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [consumerNo, setConsumerNo] = useState();
-  const [contact, setContact] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [role, setRole] = useState();
   const [errors, setErrors] = useState([]);
   const [isError, setIsError] = useState(true);
-  let prevRole = user.role_id
+  let prevRole = user.role_id;
 
-  async function updateUser() {
-    try {
-      const res = await axios.put(
-        `${url}/user/${user.id}`,
-        {
-          name: name,
-          email: email,
-          contact: contact,
-          city: city,
-          address: address,
-        },
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
+  async function updateUserM() {
+    const formData = {
+      name: name,
+      email: email,
+      contact: contact,
+      city: city,
+      address: address,
+    };
+    const action = await dispatch(updateUser({ userId: user.id, formData }));
+    if (updateUser.fulfilled.match(action)) {
       setIsOpen(false);
       fetchData();
-      setUpdateUserStatus([user, res.data.message]);
-    } catch (error) {
-      console.log(error.response);
+      setUpdateUserStatus([user, action.payload.message]);
+    } else if (updateUser.rejected.match(action)) {
+      showToast(`${action.payload.message}`, "error");
     }
   }
 
-  async function addUser() {
-    try {
-      const res = await axios.post(
-        `${url}/user/create`,
-        {
-          name: name,
-          email: email,
-          contact: contact,
-          city: city,
-          address: address,
-        },
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
-
+  async function addUserM() {
+    const formdata = {
+      name: name,
+      email: email,
+      contact: contact,
+      city: city,
+      address: address,
+    };
+    const action = await dispatch(addUser(formdata));
+    if (addUser.fulfilled.match(action)) {
+      console.log(action);
       setIsOpen(false);
       fetchData();
-      console.log(res.data);
-      // setUpdateUserStatus([user,res.data.message])
-    } catch (error) {
-      console.log(error.response);
+      setUpdateUserStatus([user, action.payload.message]);
+    } else if (addUser.rejected.match(action)) {
+      showToast(action.payload.message,'error')
     }
   }
 
@@ -96,7 +85,6 @@ const UpdateUserModal = ({ props }) => {
       console.log(error);
     }
   }
-
 
   const validateName = () => {
     let newErrors = [...errors];
@@ -143,7 +131,6 @@ const UpdateUserModal = ({ props }) => {
     setIsError(checkError());
   };
 
-
   const handleConsumerNo = (e) => {
     setConsumerNo(e.target.value);
     errors[5] = "";
@@ -155,7 +142,7 @@ const UpdateUserModal = ({ props }) => {
     const contactRe = /^[6-9][0-9]{9}$/;
     if (contact !== "" && contactRe.test(contact)) {
       newErrors[2] = "";
-      setIsError(false)
+      setIsError(false);
     } else if (!contactRe.test(contact) && contact !== "") {
       newErrors[2] = "Invalid Number";
       setIsError(true);
@@ -188,7 +175,7 @@ const UpdateUserModal = ({ props }) => {
     setAddress(e.target.value);
     errors[3] = "";
     setErrors(errors);
-    setIsError(checkError())
+    setIsError(checkError());
   };
 
   const validateCity = () => {
@@ -213,7 +200,7 @@ const UpdateUserModal = ({ props }) => {
     setCity(e.target.value);
     errors[4] = "";
     setErrors(errors);
-    setIsError(checkError())
+    setIsError(checkError());
   };
 
   // const validateName = () => {
@@ -282,18 +269,17 @@ const UpdateUserModal = ({ props }) => {
   };
 
   const handleUser = () => {
-    if(checkError()){
+    if (checkError()) {
       setIsError(true);
       return;
     }
     if (newUser) {
-      addUser();
+      addUserM();
     } else {
-      updateUser();
-      if (prevRole !== role && parseInt(userRole)===1) changeRole();
+      updateUserM();
+      if (prevRole !== role && parseInt(userRole) === 1) changeRole();
     }
   };
-
 
   useEffect(() => {
     if (!newUser) {
@@ -307,6 +293,7 @@ const UpdateUserModal = ({ props }) => {
       setRole(user.role_id);
       prevRole = user.role_id;
     }
+    setErrors(["", "", "", "", "", ""]);
   }, []);
 
   return (

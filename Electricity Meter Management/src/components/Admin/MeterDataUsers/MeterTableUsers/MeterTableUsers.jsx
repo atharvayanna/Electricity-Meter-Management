@@ -2,14 +2,24 @@ import { useEffect, useState } from "react";
 import "./MeterTableUsers.css";
 import { RotatingLines } from "react-loader-spinner";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import url from "../../../../Url";
 import UpdateMeterReadingsModal from "../../Modal/UpdateMeterReadingsModal.jsx/UpdateMeterReadingsModal";
+import {
+  deleteMeterRecord,
+  getAllMeterRecord,
+} from "../../../../redux/slices/admin/adminSlice";
+import { capitalizeStr } from "../../../../utils/utils";
+import { showToast } from "../../../../utils/toast";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MeterTableUsers = () => {
   const token = useSelector((state) => state.accessToken);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [recordUpdateStatus, setRecordUpdateStatus] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -20,22 +30,16 @@ const MeterTableUsers = () => {
 
   async function fetchData() {
     setIsLoading(true);
-    try {
-      const res = await axios.get(`${url}/meterRecord`, {
-        headers: {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
-        },
-      });
-      setIsLoading(false);
-      const formattedData = res.data.meterRecords.map((e) => {
+    const action = await dispatch(getAllMeterRecord());
+
+    if (getAllMeterRecord.fulfilled.match(action)) {
+      const formattedData = action.payload.meterRecords.map((e) => {
         const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
         const date = new Date(e.reading_date);
         const formattedDate = date
           .toLocaleDateString("en-GB")
           .split("/")
           .join("-");
-
         return {
           ...e,
           paymentStatus,
@@ -44,19 +48,10 @@ const MeterTableUsers = () => {
       });
       setAllMetersData(formattedData);
       setTotalRecords(formattedData.length);
-      console.log(res.data);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    } else if (getAllMeterRecord.rejected.match(action)) {
+      console.log(action);
     }
-  }
-
-  function capitalizeStr(str) {
-    const strArray = str.split(" ");
-    const arr = strArray.map(
-      (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    );
-    return arr.join(" ");
+    setIsLoading(false);
   }
 
   const searchResult = () => {
@@ -135,26 +130,36 @@ const MeterTableUsers = () => {
   };
 
   const handleDeleteReading = async (reading_id) => {
-    try {
-      const res = await axios.patch(
-        `${url}/meterRecord/${reading_id}`,
-        {},
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
-      console.log(res.data);
-
+    const action = await dispatch(deleteMeterRecord(reading_id));
+    if (deleteMeterRecord.fulfilled.match(action)) {
       const filteredData = allMetersData.filter(
         (ele) => ele.reading_id !== reading_id
       );
       setAllMetersData(filteredData);
-    } catch (error) {
-      console.log(error.response);
+      showToast('Reading deleted successfully', 'success')
+    } else if(deleteMeterRecord.rejected.match(action)){
+      showToast('Failed to delete reading', 'error')
     }
+    // try {
+    //   const res = await axios.patch(
+    //     `${url}/meterRecord/${reading_id}`,
+    //     {},
+    //     {
+    //       headers: {
+    //         Authorization: `${token}`,
+    //         "ngrok-skip-browser-warning": "69420",
+    //       },
+    //     }
+    //   );
+    //   console.log(res.data);
+
+    //   const filteredData = allMetersData.filter(
+    //     (ele) => ele.reading_id !== reading_id
+    //   );
+    //   setAllMetersData(filteredData);
+    // } catch (error) {
+    //   console.log(error.response);
+    // }
   };
 
   const handleUpdateReading = async (reading_id) => {
@@ -174,11 +179,23 @@ const MeterTableUsers = () => {
     setTotalRecords(searchResult().length);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (recordUpdateStatus) showToast(`${recordUpdateStatus[1]}`, "success");
+  }, [recordUpdateStatus]);
+
   return (
     <div className="meterdata__users">
+      <ToastContainer />
       {isOpen && (
         <UpdateMeterReadingsModal
-          props={{ setIsOpen, reading, newRecord: false, fetchData, newUserRecord: false }}
+          props={{
+            setIsOpen,
+            reading,
+            newRecord: false,
+            fetchData,
+            newUserRecord: false,
+            setRecordUpdateStatus,
+          }}
         />
       )}
       {/* <UpdateMeterReadingsModal props={{setIsOpen}}/> */}

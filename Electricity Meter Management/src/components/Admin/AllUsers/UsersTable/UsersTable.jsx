@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import "./UsersTable.css";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import url from "../../../../Url";
+import { useDispatch, useSelector } from "react-redux";
 import { RotatingLines } from "react-loader-spinner";
 import UpdateUserModal from "../../Modal/UpdateUserModal/UpdateUserModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import { capitalizeStr } from "../../../../utils/utils";
+import { getAllUsers } from "../../../../redux/slices/admin/adminSlice";
+import { deleteUser, addMeter } from "../../../../redux/slices/admin/handleUsers";
+import { showToast } from "../../../../utils/toast";
 
 const UsersTable = () => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const token = useSelector((state) => state.accessToken);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,35 +21,20 @@ const UsersTable = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
-  const [userUpdateStatus, setUpdateUserStatus] = useState([false]);
+  const [userUpdateStatus, setUpdateUserStatus] = useState(false);
   const [user, setUser] = useState({});
 
-  function capitalizeStr(str) {
-    const strArray = str.split(" ");
-    const arr = strArray.map(
-      (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    );
-    return arr.join(" ");
-  }
-
-  async function fetchData() {
+  const fetchData = async () => {
     setIsLoading(true);
-    try {
-      const res = await axios.get(`${url}/users`, {
-        headers: {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
-        },
-      });
-      setIsLoading(false);
-      setUsers(res.data.userData);
-      setTotalRecords(res.data.userData.length);
-      console.log(res.data);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    const action = await dispatch(getAllUsers());
+    if (getAllUsers.fulfilled.match(action)) {
+      setUsers(action.payload.userData);
+      setTotalRecords(action.payload.userData.length);
+    } else if (getAllUsers.rejected.match(action)) {
+      console.log(action);
     }
-  }
+    setIsLoading(false);
+  };
 
   async function handleAddUser() {
     setIsNewUser(true);
@@ -62,62 +49,30 @@ const UsersTable = () => {
   }
 
   async function handleDeleteUser(user_id) {
-    const deleteUser = users.find((ele) => ele.id === user_id);
-    console.log(token);
-    try {
-      const res = await axios.patch(
-        `${url}/user/${deleteUser.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
+    const deletedUser = users.find((ele) => ele.id === user_id);
+    const action = await dispatch(deleteUser(deletedUser));
 
+    if (deleteUser.fulfilled.match(action)) {
       const filterActiveUsers = users.filter((ele) => {
         return ele.id !== user_id;
       });
       setUsers(filterActiveUsers);
-      console.log(res.data);
-    } catch (error) {
-      console.log(error.response);
+      showToast(
+        `${capitalizeStr(deletedUser.name)} deleted succesfully`,
+        "success"
+      );
+    } else if(deleteUser.rejected.match(action)) {
+      showToast(`Delete ${capitalizeStr(deletedUser.name)} failed`, "error");
     }
   }
 
-  async function addMeter(e) {
-    try {
-      const res = await axios.post(
-        `${url}/createMeter`,
-        {
-          user_id: e.id,
-        },
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
-      console.log(res.data);
-      toast.success(
-        `${res.data.userData.meter_number} Added Successully to ${e.name}`,
-        {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }
-      );
-    } catch (error) {
-      console.log(error.response);
+  async function addUserMeter(e) {
+    const action = await dispatch(addMeter(e))
+    if(addMeter.fulfilled.match(action)){
+      showToast(`${action.payload.userData.meter_number} assigned to ${capitalizeStr(e.name)}`, 'success');
+    } else if(addMeter.rejected.match(action)){
+      showToast(`Failed to add meter to ${capitalizeStr(e.name)}`, 'error')
     }
-    // console.log('Meter Added')
   }
 
   const handleSearch = (e) => {
@@ -126,7 +81,7 @@ const UsersTable = () => {
   };
 
   const searchResult = () => {
-    let filteredData = users?.length > 0 ? [...users]: [];
+    let filteredData = users?.length > 0 ? [...users] : [];
     if (searchQuery) {
       filteredData = users.filter((e) => {
         return (
@@ -184,7 +139,7 @@ const UsersTable = () => {
       cancelButtonColor: "red",
     }).then((result) => {
       if (result.isConfirmed) {
-        addMeter(e);
+        addUserMeter(e);
       }
     });
   };
@@ -198,19 +153,10 @@ const UsersTable = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (userUpdateStatus[0]) {
-      toast.success(userUpdateStatus[1], {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+    if (userUpdateStatus) {
+      showToast(userUpdateStatus[1], 'success')
     }
-  }, [userUpdateStatus[0]]);
+  }, [userUpdateStatus]);
 
   return (
     <div className="table__users">

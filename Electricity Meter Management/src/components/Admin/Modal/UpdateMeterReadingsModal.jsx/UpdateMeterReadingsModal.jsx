@@ -1,16 +1,29 @@
-import axios from "axios";
 import "./UpdateMeterReadingsModal.css";
 import { useEffect, useState } from "react";
-import url from "../../../../Url";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addMeterRecord,
+  updateMeterRecord,
+} from "../../../../redux/slices/admin/adminSlice";
+import { showToast } from "../../../../utils/toast";
+import { ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateMeterReadingsModal = ({ props }) => {
   const token = useSelector((state) => state.accessToken);
-  const { setIsOpen, reading, newRecord, newUserRecord, fetchData } = props;
-  const [userId, setUserID] = useState('');
-  const [meterNo, setMeterNo] = useState('');
-  const [date, setDate] = useState('');
-  const [consumption, setConsumption] = useState('');
+  const dispatch = useDispatch();
+  const {
+    setIsOpen,
+    reading,
+    newRecord,
+    newUserRecord,
+    fetchData,
+    setRecordUpdateStatus,
+  } = props;
+  const [userId, setUserID] = useState("");
+  const [meterNo, setMeterNo] = useState("");
+  const [date, setDate] = useState("");
+  const [consumption, setConsumption] = useState("");
   const [billAmount, setBillAmount] = useState();
   const [paymentStatus, setPaymentStatus] = useState("");
   const [errors, setErrors] = useState([]);
@@ -18,58 +31,43 @@ const UpdateMeterReadingsModal = ({ props }) => {
   const currDate = new Date();
 
   async function addRecord() {
-    try {
-      const res = await axios.post(
-        `${url}/meterRecord/createMeterRecord`,
-        {
-          user_id: userId,
-          meter_number: meterNo,
-          reading_date: date.split("T")[0],
-          reading_value: consumption,
-          is_paid: paymentStatus === "Paid" ? "yes" : "No",
-        },
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
-      console.log("Meter record added:", res.data);
+    const formData = {
+      user_id: userId,
+      meter_number: meterNo,
+      reading_date: date.split("T")[0],
+      reading_value: consumption,
+      is_paid: paymentStatus === "Paid" ? "yes" : "No",
+    };
+    const action = await dispatch(addMeterRecord(formData));
+    if (addMeterRecord.fulfilled.match(action)) {
+      console.log(action);
       setIsOpen(false);
-    } catch (error) {
-      console.log(error);
+    } else if (addMeterRecord.rejected.match(action)) {
+      showToast(action.payload.message, "error");
     }
   }
 
   async function updateRecord() {
-    try {
-      console.log(reading.reading_id);
-      const res = await axios.put(
-        `${url}/meterRecord/${reading.reading_id}`,
-        {
-          reading_value: consumption,
-          reading_date: date.split("T")[0],
-          billing_amount: billAmount,
-          is_paid: paymentStatus === "Paid" ? "yes" : "No",
-        },
-        {
-          headers: {
-            Authorization: `${token}`,
-            "ngrok-skip-browser-warning": "69420",
-          },
-        }
-      );
-
+    const formData = {
+      reading_value: consumption,
+      reading_date: date.split("T")[0],
+      billing_amount: billAmount,
+      is_paid: paymentStatus === "Paid" ? "yes" : "No",
+    };
+    const action = await dispatch(
+      updateMeterRecord({ reading_id: reading.reading_id, formData })
+    );
+    if (updateMeterRecord.fulfilled) {
       fetchData();
       setIsOpen(false);
-    } catch (error) {
-      console.log(error.response);
+      setRecordUpdateStatus([reading, action.payload.message]);
+    } else if (updateMeterRecord.rejected) {
+      showToast("Some error occured", "error");
     }
   }
 
   const handleUpdateReading = () => {
-    if(checkError()) return
+    if (checkError()) return;
     if (newRecord) {
       addRecord();
     } else {
@@ -98,7 +96,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
 
   const handleUserId = (e) => {
     setUserID(e.target.value.trim());
-    errors[0] = '';
+    errors[0] = "";
     setErrors(errors);
     checkError();
   };
@@ -125,7 +123,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
   //   }
   //   if (!meterNoRe.test(meterNo)) {
   //     return "Invalid Number";
-  //   } 
+  //   }
 
   //   return ''
   // };
@@ -141,8 +139,8 @@ const UpdateMeterReadingsModal = ({ props }) => {
       newError[2] = "This field is required";
       setIsError(true);
     } else {
-      newError[2] = '';
-      setIsError(false)
+      newError[2] = "";
+      setIsError(false);
     }
     setErrors(newError);
   };
@@ -157,23 +155,23 @@ const UpdateMeterReadingsModal = ({ props }) => {
 
   const handleDate = (e) => {
     setDate(e.target.value);
-    errors[2] = '';
-    setErrors(errors)
+    errors[2] = "";
+    setErrors(errors);
     checkError();
   };
 
   const validateConsumption = () => {
     let newErrors = [...errors];
     const consumpRe = /[0-9]$/;
-    if (consumption !== "" && consumpRe.test(consumption)){
+    if (consumption !== "" && consumpRe.test(consumption)) {
       newErrors[3] = "";
-    } else if(!consumpRe.test(consumption) && consumption!==''){
-      newErrors[3] = 'Invalid Data'
-      setIsError(true)
-    } else if(parseFloat(consumption)>10000){
-      newErrors[3] = 'Consumption limit exceeded'
+    } else if (!consumpRe.test(consumption) && consumption !== "") {
+      newErrors[3] = "Invalid Data";
       setIsError(true);
-    } else{
+    } else if (parseFloat(consumption) > 10000) {
+      newErrors[3] = "Consumption limit exceeded";
+      setIsError(true);
+    } else {
       newErrors[3] = "This field is required";
       setIsError(true);
     }
@@ -192,7 +190,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
   //   if(!consumpRe.test(consumption)){
   //     return "Invalid data"
   //   }
-  
+
   //   console.log(consumption);
   //   return "";
   // };
@@ -200,8 +198,8 @@ const UpdateMeterReadingsModal = ({ props }) => {
   const handleConsumption = (e) => {
     setConsumption(e.target.value.trim());
     setBillAmount(e.target.value * 5);
-    errors[3] = '';
-    setErrors(errors)
+    errors[3] = "";
+    setErrors(errors);
     checkError();
   };
   const handleBillAmount = (e) => {
@@ -237,6 +235,7 @@ const UpdateMeterReadingsModal = ({ props }) => {
   return (
     <>
       <div className="darkBG" onClick={() => setIsOpen(false)} />
+      <ToastContainer />
       <div className="centered">
         <div className="modal">
           <div className="modalHeader">

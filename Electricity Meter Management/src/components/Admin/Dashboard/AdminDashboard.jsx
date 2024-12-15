@@ -2,15 +2,17 @@ import "./AdminDashboard.css";
 import axios from "axios";
 import url from "../../../Url";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BarChart from "../Charts/BarChart";
 import LineChart from "../Charts/LineChart";
-import Histogram from "../Charts/Histogram";
+// import Histogram from "../Charts/Histogram";
 import DefaultLineChart from "../Charts/DefaultLineChart";
 import DonutChart from "../Charts/DonutChart";
+import { getAllMeterRecord } from "../../../redux/slices/admin/adminSlice";
 
 const AdminDashboard = () => {
-  const token = useSelector((state) => state.accessToken);
+  // const token = useSelector((state) => state.app.accessToken);
+  const dispatch = useDispatch();
   const curDate = new Date();
   const lastMonth = new Date(curDate.getFullYear(), curDate.getMonth() - 1, 1);
   const prevMonth = new Date(
@@ -27,36 +29,31 @@ const AdminDashboard = () => {
   const [meterData, setMeterData] = useState([]);
 
   async function fetchData() {
-    try {
-      const res = await axios.get(`${url}/meterRecord`, {
-        headers: {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
-        },
-      });
+      const action = await dispatch(getAllMeterRecord());
+      if (getAllMeterRecord.fulfilled.match(action)) {
+        const formattedData = action.payload.meterRecords.map((e) => {
+          const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
+          const date = new Date(e.reading_date);
+          const formattedDate = date
+            .toLocaleDateString("en-GB")
+            .split("/")
+            .join("-");
 
-      const formattedData = res.data.meterRecords.map((e) => {
-        const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
-        const date = new Date(e.reading_date);
-        const formattedDate = date
-          .toLocaleDateString("en-GB")
-          .split("/")
-          .join("-");
+          return {
+            ...e,
+            paymentStatus,
+            formattedDate,
+            month: date.getMonth(),
+            year: date.getFullYear(),
+          };
+        });
+        setMeterData(formattedData);
+      }
 
-        return {
-          ...e,
-          paymentStatus,
-          formattedDate,
-          month: date.getMonth(),
-          year: date.getFullYear(),
-        };
-      });
+      if(getAllMeterRecord.rejected.match(action)){
+        console.log(action);
+      }
 
-      setMeterData(formattedData);
-      console.log(res.data);
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   const calculateKpi = () => {
