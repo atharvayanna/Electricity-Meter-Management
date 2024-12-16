@@ -12,7 +12,11 @@ export const loginUser = createAsyncThunk(
   "login/user",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${url}/login/user`, credentials);
+      const response = await axios.post(`${url}/login/user`, credentials,{
+        headers:{
+          "ngrok-skip-browser-warning": "69420",
+        }
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

@@ -3,11 +3,11 @@ import saveEnegry from "../../assets/save energy2.jpg";
 import { useSelector } from "react-redux";
 
 const Home = () => {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.app.user);
   return (
     <div className="home">
       <div className="home__welcome">
-        <p>{`Welcome, ${user.name}`}</p>
+        <p>{`Welcome, ${user?.name}`}</p>
       </div>
 
       <div className="home__content">

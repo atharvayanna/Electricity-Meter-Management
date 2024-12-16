@@ -1,61 +1,45 @@
-import { useEffect} from "react";
+import { useEffect } from "react";
 import NavBar from "../NavBar/NavBar";
 import SideBarNavigator from "../NavBar/SideBarNavigator/SideBarNavigator";
 import Home from "./Home";
 import "./User.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router-dom";
-import { useSelector,useDispatch } from "react-redux";
-import axios from "axios";
-import url from "../../Url";
+import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../redux/appSlice";
+import { showToast } from "../../utils/toast";
+import { fetchUserProfile } from "../../redux/slices/user/userSlice";
 
 const User = () => {
-  const {state} = useLocation();
-  const token = useSelector(state=>state.accessToken);
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    if(state){
-      toast.success(state.Msg, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-      });
+  const { state } = useLocation();
+  const token = useSelector((state) => state.app.accessToken);
+  const dispatch = useDispatch();
+  const hasShownToast = JSON.parse(localStorage.getItem("loginToastShown"));
+
+  async function fetchProfile(userId) {
+    const action = await dispatch(fetchUserProfile(userId));
+    if (fetchUserProfile.fulfilled.match(action)) {
+      dispatch(setUser({ userDetails: action.payload.userDetails }));
+    } else if (fetchUserProfile.rejected.match(action)) {
+      console.log(action);
     }
+  }
 
-    const parts = token.split(".");
-    const payload = JSON.parse(atob(parts[1]));
-    const userId = payload.user_id;
-
-    async function fetchProfile() {
-      try{
-      const res = await axios.get(`${url}/profile/user/${userId}`,{
-        headers:{
-          Authorization:`${token}`,
-          "ngrok-skip-browser-warning": "69420"
-        }
-      })
-      // console.log(res.data.userDetails)
-
-      dispatch(setUser({userDetails:res.data.userDetails}))
-      
-
-    } catch(error){
-      console.log(error)
-    }}
-    fetchProfile();
-
-  },[])
+  useEffect(() => {
+    if (state && !hasShownToast) {
+      showToast("Login Successful", "success");
+      localStorage.setItem("loginToastShown", true);
+      const parts = token.split(".");
+      const payload = JSON.parse(atob(parts[1]));
+      const userId = payload.user_id;
+      fetchProfile(userId);
+    }
+  }, []);
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <NavBar />
 
       <div className="user">

@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import url from "../../../Url";
 import "./MeterTable.css";
 import { RotatingLines } from "react-loader-spinner";
 import axios from "axios";
 import UpdateMeterReadingsModal from "../../Admin/Modal/UpdateMeterReadingsModal.jsx/UpdateMeterReadingsModal";
+import { userMeterData } from "../../../redux/slices/user/userSlice";
 
 const MeterTable = () => {
   const token = useSelector((state) => state.accessToken);
-  const user = useSelector((state) => state.user);
-  const userMeters = useSelector((state) => state.user.meter_numbers);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.app.user);
+  const userMeters = useSelector((state) => state.app.user.meter_numbers);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeter, setCurrentMeter] = useState("");
   const [meterData, setMeterData] = useState([]);
@@ -20,17 +22,12 @@ const MeterTable = () => {
   const [sortOption, setSortOption] = useState("dateDesc");
   const [isOpen, setIsOpen] = useState(false);
 
+
   async function fetchData() {
     setIsLoading(true);
-    try {
-      const res = await axios.get(`${url}/meterReading/user/${currentMeter}`, {
-        headers: {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
-        },
-      });
-      setIsLoading(false);
-      const formattedData = res.data.meter_readings.map((e) => {
+    const action = await dispatch(userMeterData(currentMeter));
+    if (userMeterData.fulfilled.match(action)) {
+      const formattedData = action.payload.meter_readings.map((e) => {
         const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
         const date = new Date(e.reading_date);
         const formattedDate = date
@@ -44,13 +41,16 @@ const MeterTable = () => {
           formattedDate,
         };
       });
-      setMeterData(formattedData);
-      setTotalRecords(formattedData.length);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+      const sortedData = formattedData.sort(
+        (a, b) => new Date(b.reading_date) - new Date(a.reading_date)
+      );
+      setMeterData(sortedData);
+    } else if(userMeterData.rejected.match(action)){
+      console.log(action.payload.message);
     }
+    setIsLoading(false);
   }
+
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -209,33 +209,6 @@ const MeterTable = () => {
           <i className="fa-solid fa-magnifying-glass"></i>
         </div>
         </div>
-        {/* <div className="functions">
-          <button onClick={handleAddRecord}>Add Bill</button>
-          <select name="" id="" onChange={handleCurrentMeter}>
-            {userMeters.map((e, index) => (
-              <option value={e} key={index}>
-                {" "}
-                {e}{" "}
-              </option>
-            ))}
-          </select>
-          <select id="sortOption" value={sortOption} onChange={handleSort}>
-            <option value="dateDesc">Date &#x2193;</option>
-            <option value="dateAsc">Date &#x2191;</option>
-            <option value="billAmountAsc">Bill &#x2191;</option>
-            <option value="billAmountDesc">Bill &#x2193;</option>
-          </select>
-        </div>
-        <div className="search">
-          <input
-            type="text"
-            name=""
-            id="user_search"
-            placeholder="Search"
-            onChange={handleSearch}
-          />
-          <i className="fa-solid fa-magnifying-glass"></i>
-        </div> */}
       </div>
       <div className="table">
         <div className="table__container">

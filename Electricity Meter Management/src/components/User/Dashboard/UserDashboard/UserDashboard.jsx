@@ -1,16 +1,18 @@
 import "./UserDashboard.css";
 import BarChart from "../../Charts/BarChart";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import url from "../../../../Url";
 import LineChart from "../../Charts/LineChart";
 import { net } from "@amcharts/amcharts4/core";
+import { userMeterData } from "../../../../redux/slices/user/userSlice";
 
 const UserDashboard = () => {
-  const token = useSelector((state) => state.accessToken);
+  const token = useSelector((state) => state.app.accessToken);
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const userMeters = useSelector((state) => state.user.meter_numbers);
+  const userMeters = useSelector((state) => state.app.user.meter_numbers);
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeter, setCurrentMeter] = useState("");
   const [meterData, setMeterData] = useState([]);
@@ -23,15 +25,9 @@ const UserDashboard = () => {
 
   async function fetchData() {
     setIsLoading(true);
-    try {
-      const res = await axios.get(`${url}/meterReading/user/${currentMeter}`, {
-        headers: {
-          Authorization: `${token}`,
-          "ngrok-skip-browser-warning": "69420",
-        },
-      });
-      setIsLoading(false);
-      const formattedData = res.data.meter_readings.map((e) => {
+    const action = await dispatch(userMeterData(currentMeter));
+    if (userMeterData.fulfilled.match(action)) {
+      const formattedData = action.payload.meter_readings.map((e) => {
         const paymentStatus = e.is_paid === "No" ? "Unpaid" : "Paid";
         const date = new Date(e.reading_date);
         const formattedDate = date
@@ -49,9 +45,8 @@ const UserDashboard = () => {
         (a, b) => new Date(b.reading_date) - new Date(a.reading_date)
       );
       setMeterData(sortedData);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
+    } else if(userMeterData.rejected.match(action)){
+      console.log(action.payload.message);
     }
   }
 
@@ -114,7 +109,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     setCurrentMeter(userMeters[0]);
-    fetchData();
+    // fetchData();
     // calculateKpi();
   }, []);
 
@@ -133,10 +128,10 @@ const UserDashboard = () => {
         <div className="kpi__card">
           <h3>
             Meter Number
-            <p>{`Consumer No: ${user.id}`}</p>
+            <p>{`Consumer No: ${user?.id}`}</p>
           </h3>
           <select name="" id="" onChange={handleCurrentMeter}>
-            {userMeters.map((e, index) => (
+            {userMeters?.map((e, index) => (
               <option value={e} key={index}>
                 {" "}
                 {e}{" "}
